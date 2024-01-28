@@ -11,6 +11,7 @@ const Course = db.define("course", {
   courseName: {
     type: DataTypes.STRING,
     allowNull: false,
+    unique: true
   },
   teacherID: {
     type: DataTypes.UUID,
@@ -20,6 +21,7 @@ const Course = db.define("course", {
     type: DataTypes.UUID,
     allowNull: false,
   },
+  
   year: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -62,7 +64,6 @@ export const createCourse = async (
 // Read all courses
 export const getAllCourses = async () => {
   const courses = await Course.findAll({
-    attributes: ["courseID", "courseName", "teacherID", "facultyID", "year"],
     include: [
       {
         model: Teacher,

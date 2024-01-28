@@ -16,6 +16,13 @@ const Student = db.define("student", {
     type: DataTypes.UUID,
     allowNull: true, // Assuming a student may not always be associated with a faculty
   },
+  year: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    validate: {
+      isIn: [[1, 2, 3, 4]],
+    },
+  },
 });
 
 // Define association with User model
@@ -76,9 +83,9 @@ export const updateStudent = async (studentID, updatedData) => {
   return updatedStudent;
 };
 
-export const deleteStudent = async (studentID) => {
+export const delteStudentByUserId = async (userID) => {
   const deletedStudent = await Student.destroy({
-    where: { studentID: studentID },
+    where: { userID: userID },
   });
   return deletedStudent;
 };

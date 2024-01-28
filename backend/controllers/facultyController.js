@@ -1,82 +1,92 @@
 import { v4 as uuidv4 } from "uuid";
-import Faculty from "../models/facultyModel.js";
+import  {
+  createFaculty,
+  getAllFaculties,
+  getFacultyById,
+  updateFacultyById,
+  deleteFacultyById,
+} from "../models/facultyModel.js";
 
-const createFaculty = async (req, res, next) => {
- 
+// @desc crate faculty
+// @route POST /api/faculty
+// @access admin
+
+const createFacultyHandler = async (req, res, next) => {
   try {
-    const { department} = req.body
+    const { department } = req.body;
 
     if (!department) {
       res.status(400);
       throw new Error("Fields can not be empty");
     }
 
-    const faculty = await Faculty.create({ department,facultyID:uuidv4() });
-
+    const faculty = await createFaculty(department, uuidv4());
     res.status(201).json(faculty);
-
   } catch (error) {
-    next(error)
+    next(error);
   }
 };
 
+// @desc view single faculty
+// @route GET /api/faculty/:id
+// @access admin
 
-
-
-const getAllFaculties = async () => {
+const getFacultyByIdHandler = async (req, res, next) => {
   try {
-    const faculties = await Faculty.findAll();
-    return faculties;
+    const faculty = await getFacultyById(req.params.id);
+    res.status(200).json(faculty);
   } catch (error) {
-    throw error;
+    next(error);
   }
 };
 
-const getFacultyById = async (facultyID) => {
+// @desc update faculty
+// @route PUT /api/faculty/:id
+// @access admin
+
+const updateFacultyByIdHandler = async (req, res, next) => {
+  const { department } = req.body;
   try {
-    const faculty = await Faculty.findByPk(facultyID);
-    return faculty;
+    const faculty = await updateFacultyById(req.params.id, { department });
+
+    res.status(200).json(faculty);
   } catch (error) {
-    throw error;
+    next(error);
   }
 };
 
-const updateFaculty = async (facultyID, newDepartment) => {
+// @desc get all faculties
+// @route GET /api/faculty
+// @access admin
+
+const getAllFacultiesHandler = async (req, res, next) => {
   try {
-    const faculty = await Faculty.findByPk(facultyID);
+    const faculties = await getAllFaculties();
 
-    if (!faculty) {
-      throw new Error("Faculty not found");
-    }
-
-    faculty.set({ department: newDepartment });
-    await faculty.save();
-
-    return faculty;
+    res.status(200).json(faculty);
   } catch (error) {
-    throw error;
+    next(error);
   }
 };
 
-const deleteFaculty = async (facultyID) => {
+// @desc delete faculty
+// @route DELETE /api/faculty
+// @access admin
+
+const deleteFacultyByIdHandler = async (req, res, next) => {
   try {
-    const faculty = await Faculty.findByPk(facultyID);
+  await deleteFacultyById(req.params.id);
 
-    if (!faculty) {
-      throw new Error("Faculty not found");
-    }
-
-    await faculty.destroy();
-    return "Faculty deleted successfully";
+    res.status(200).json({msg: "delete success"});
   } catch (error) {
-    throw error;
+    next(error);
   }
 };
 
 export {
-  createFaculty,
-  getAllFaculties,
-  getFacultyById,
-  updateFaculty,
-  deleteFaculty,
+  createFacultyHandler,
+  getFacultyByIdHandler,
+  updateFacultyByIdHandler,
+  getAllFacultiesHandler,
+  deleteFacultyByIdHandler,
 };

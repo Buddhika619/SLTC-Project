@@ -2,14 +2,18 @@ import path from "path";
 import express from "express";
 import morgan from "morgan";
 import dotenv from "dotenv";
-import userRoutes from "./routes/userRoutes.js";
 import helmet from "helmet";
-
-import FacuultyRoutes from "./routes/facutlyRoutes.js";
-
 import colors from "colors";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import db from "./config/db.js";
+import facultyRoutes from "./routes/facutlyRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import attendanceRoutes from './routes/attendanceRoutes.js'
+import courseRoutes from './routes/courseRoutes.js'
+import sessionLocationRoutes from './routes/sessionLocationRoutes.js'
+import sessionRoutes from './routes/sessionRoutes.js'
+import studentCoursesRoutes from './routes/studentCoursesRoutes.js'
+import teacherCoursesRoutes from './routes/teacherCoursesRoutes.js'
 
 dotenv.config();
 
@@ -31,7 +35,14 @@ app.use(express.json());
 app.use(helmet());
 //routes
 app.use("/api/users", userRoutes);
-app.use("/api/faculty", FacuultyRoutes);
+app.use("/api/faculty", facultyRoutes);
+app.use("/api/attendance", attendanceRoutes);
+app.use("/api/course", courseRoutes)
+app.use('/api/session', sessionRoutes)
+app.use('/api/session-location', sessionLocationRoutes)
+app.use('/api/students-courses', studentCoursesRoutes)
+app.use('/api/teachers-courses', teacherCoursesRoutes)
+
 
 //error handling
 app.use(notFound);

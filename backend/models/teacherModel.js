@@ -52,11 +52,10 @@ export const getTeacherList = async () => {
 export const getTeacherByUserId = async (userID) => {
   const teacher = await Teacher.findOne({
     where: { userID: userID },
-    attributes: ['StudentID'],
     include: [
       {
         model: User,
-        attributes: [ 'userID', 'firstName', 'lastName', 'email', 'isAdmin'],
+        exclude: ['password'],
       },
       
     ],
@@ -73,9 +72,9 @@ export const updateTeacher = async (teacherID, updatedData) => {
   return updatedTeacher;
 };
 
-export const deleteTeacher = async (teacherID) => {
+export const deleteTeacherById = async (userID) => {
   const deletedTeacher = await Teacher.destroy({
-    where: { teacherID: teacherID },
+    where: { userID: userID },
   });
   return deletedTeacher;
 };

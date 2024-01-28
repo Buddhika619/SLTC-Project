@@ -17,6 +17,12 @@ export default Faculty;
 
 // resuable queries =============================================================
 
+export const createFaculty = async (department, facultyID) => {
+  const faculty = await Faculty.create({ department,facultyID });
+  return faculty;
+};
+
+
 export const findFacultyByDepartment = async (faculty) => {
   const facultyRes = await Faculty.findOne({
     where: { department: faculty },

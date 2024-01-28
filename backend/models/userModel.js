@@ -65,26 +65,26 @@ export const createUser = async (
 
 export const findAllUsers = async () => {
   const users = await User.findAll({
-    attributes: [
-      "userID",
-      "firstName",
-      "lastName",
-    
-      "isAdmin",
-      "email",
-      "isApproved",
-    ],
+    exclude: ["password"],
   });
+  return users;
+};
+
+export const unapprovedUsers = async () => {
+  const users = await User.findAll(
+    { where: { isApproved: false } },
+    {
+      exclude: ["password"],
+    }
+  );
   return users;
 };
 
 export const getUserById = async (id) => {
   const user = await User.findByPk(id, {
-    exclude: ['password']
+    exclude: ["password"],
   });
 
-
-  
   if (!user) {
     throw new Error("User not found");
   }
@@ -97,7 +97,6 @@ export const getUserById = async (id) => {
   return user;
 };
 
-
 export const deleteUserById = async (id) => {
   const user = await User.findByPk(id);
 
@@ -109,8 +108,3 @@ export const deleteUserById = async (id) => {
 
   return user;
 };
-
-
-
-
-

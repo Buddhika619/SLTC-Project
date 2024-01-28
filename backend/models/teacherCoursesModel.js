@@ -4,7 +4,7 @@ import Teacher from "./teacherModel.js";
 import Course from "./courseModel.js";
 import User from "./userModel.js";
 
-const TeachersCourses = db.define("teachersCourses", {
+const TeachersCourses = db.define("teachers_courses", {
   teacherID: {
     type: DataTypes.UUID,
     allowNull: false,
@@ -61,9 +61,9 @@ export const getTeachersCoursesList = async () => {
   return teachersCoursesList;
 };
 
-export const getTeachersCoursesByTeacherID = async (teacherID) => {
+export const getTeachersCoursesByTeacherID = async (teacherID,courseID) => {
   const teachersCoursesList = await TeachersCourses.findAll({
-    where: { teacherID: teacherID },
+    where: { teacherID: teacherID, courseID: courseID },
     include: [
       {
         model: Teacher,

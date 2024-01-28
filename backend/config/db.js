@@ -24,3 +24,4 @@ db.sync() // Use force: true only for development, as it drops existing tables
   });
 
 export default db;
+

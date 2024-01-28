@@ -3,7 +3,7 @@ import db from "../config/db.js";
 import User from "./userModel.js";
 import Faculty from "./facultyModel.js";
 
-const NonAcademicStaff = db.define("nonAcademicStaff", {
+const NonAcademicStaff = db.define("non_academic_staff", {
   staffID: {
     type: DataTypes.UUID,
     primaryKey: true,
@@ -64,7 +64,7 @@ export const getStaffList = async () => {
 export const getStaffByUserID = async (userID) => {
   const staff = await NonAcademicStaff.findOne({
     where: { userID: userID },
-    attributes: ['StudentID'],
+
     include: [
       {
         model: User,
@@ -91,14 +91,9 @@ d
 };
 
 // Delete non-academic staff by ID
-export const deleteNonAcademicStaffById = async (id) => {
-  const staff = await NonAcademicStaff.findByPk(id);
-
-  if (!staff) {
-    throw new Error("Non-academic staff not found");
-  }
-
-  await staff.destroy();
-
-  return staff;
+export const deleteNonAcademicStaffById = async (userID) => {
+  const deletedStudent = await Student.destroy({
+    where: { userID: userID },
+  });
+  return deletedStudent;
 };

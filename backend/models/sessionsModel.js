@@ -25,6 +25,10 @@ const Session = db.define("session", {
     type: DataTypes.INTEGER,
     allowNull: false
   },
+  locationID: {
+    type: DataTypes.UUID,
+    allowNull: false,
+  },
   // Add other session-related fields as needed
 });
 
@@ -32,15 +36,16 @@ const Session = db.define("session", {
 Session.belongsTo(Course, { foreignKey: "courseID", onDelete: "CASCADE",  });
 Session.belongsTo(SessionLocation, { foreignKey: "locationID", onDelete: "CASCADE",  });
 
+
 export default Session;
 
 
 // reusable queries =================================================================
 
 // Create a new session
-export const createSession = async (courseID, date, startTime, minutes, locationID) => {
+export const createSession = async (sessionID, courseID, date, startTime, minutes, locationID) => {
   const session = await Session.create({
-    sessionID: uuidv4(),
+    sessionID,
     courseID: courseID,
     date: date,
     startTime: startTime,

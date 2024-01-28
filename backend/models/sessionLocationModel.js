@@ -1,6 +1,7 @@
 // Import necessary modules
 import { DataTypes } from "sequelize";
 import db from "../config/db.js";
+import Faculty from "./facultyModel.js";
 
 // Define SessionLocation model
 const SessionLocation = db.define("session_location", {
@@ -16,6 +17,8 @@ const SessionLocation = db.define("session_location", {
     type: DataTypes.UUID,
     allowNull: false,
   },
+
+  
 });
 
 SessionLocation.belongsTo(Faculty, { foreignKey: "facultyID", onDelete: "CASCADE" });
@@ -26,9 +29,9 @@ export default SessionLocation;
 
 
 // Create a new session location
-export const createSessionLocation = async (name, facultyID) => {
+export const createSessionLocation = async (locationID, name, facultyID) => {
   const sessionLocation = await SessionLocation.create({
-    locationID: uuidv4(),
+    locationID,
     name: name,
     facultyID: facultyID,
   });
@@ -39,11 +42,10 @@ export const createSessionLocation = async (name, facultyID) => {
 // Read all session locations
 export const getAllSessionLocations = async () => {
   const sessionLocations = await SessionLocation.findAll({
-    attributes: ["locationID", "name"],
     include: [
       {
         model: Faculty,
-        attributes: ["facultyID", "department"],
+        
       },
     ],
   });
@@ -54,11 +56,11 @@ export const getAllSessionLocations = async () => {
 // Read session location by ID
 export const getSessionLocationById = async (id) => {
   const sessionLocation = await SessionLocation.findByPk(id, {
-    attributes: ["locationID", "name"],
+
     include: [
       {
         model: Faculty,
-        attributes: ["facultyID", "department"],
+
       },
     ],
   });

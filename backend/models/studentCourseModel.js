@@ -3,11 +3,11 @@ import db from "../config/db.js";
 import Student from "./studentModel.js";
 import Course from "./courseModel.js";
 import User from "./userModel.js";
-import Teacher from "./teacherModel.js";
+
 import Faculty from "./facultyModel.js";
 
 const StudentsCourses = db.define(
-  "studentsCourses",
+  "students_courses",
   {
     studentID: {
       type: DataTypes.UUID,
