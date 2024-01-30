@@ -57,11 +57,10 @@ export const getStudentList = async () => {
 export const getStudentByUserId = async (userID) => {
   const student = await Student.findOne({
     where: { userID: userID },
-    attributes: ['StudentID'],
     include: [
       {
         model: User,
-        attributes: [ 'userID', 'firstName', 'lastName', 'email', 'isAdmin'],
+        exclude: [ 'password'],
       },
       
     ],
@@ -69,7 +68,21 @@ export const getStudentByUserId = async (userID) => {
 
   return student;
 };
+export const getStudentByPK = async (studentID) => {
+  const student = await Student.findByPk({
+    studentID,
+  
+    include: [
+      {
+        model: User,
+        exclude: [ 'password'],
+      },
+      
+    ],
+  });
 
+  return student;
+};
 
 export const createStudent = async (studentData) => {
   const createdStudent = await Student.create(studentData);

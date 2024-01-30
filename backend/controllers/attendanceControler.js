@@ -21,11 +21,11 @@ const getAttendanceListHandler = async (req, res, next) => {
 };
 
 // @desc Get a single attendance record by ID
-// @route POST /api/attendance/single
+// @route POST /api/attendance/:studentID/:sessionID
 // @access ownData
 
 const getAttendanceByIdHandler = async (req, res, next) => {
-  const { studentID, sessionID } = req.body;
+  const { studentID, sessionID } = req.params;
   try {
     if (req.user.userID === req.params.id || req.user.isAdmin) {
       const attendance = await getAttendanceById(studentID, sessionID);
@@ -49,13 +49,13 @@ const getAttendanceByIdHandler = async (req, res, next) => {
 
 const createAttendanceHandler = async (req, res, next) => {
   try {
-    const { studentID, sessionID, isPresent } = req.body;
+    const { studentID, sessionID } = req.body;
 
     if (req.user.userID === req.params.id || req.user.isAdmin) {
       const createdAttendance = await createAttendance({
         studentID,
         sessionID,
-        isPresent,
+        isPresent: true,
       });
       res.status(201).json(createdAttendance);
     } else {
@@ -68,7 +68,7 @@ const createAttendanceHandler = async (req, res, next) => {
 };
 
 // @desc Update an attendance record by ID
-// @route PUT /api/attendance/:id
+// @route PUT /api/attendance/:studentID/:sessionID
 // @access admin
 
 const updateAttendanceHandler = async (req, res, next) => {
@@ -87,12 +87,12 @@ const updateAttendanceHandler = async (req, res, next) => {
 };
 
 // @desc Delete an attendance record by ID
-// @route POST /api/attendance/delete
+// @route DELETE /api/attendance/:studentID/:sessionID
 // @access admin
 
 const deleteAttendanceHandler = async (req, res, next) => {
   try {
-    const { studentID, sessionID } = req.body;
+    const { studentID, sessionID } = req.params;
     const deletedAttendance = await deleteAttendance(studentID, sessionID);
     res.status(200).json(deletedAttendance);
   } catch (error) {

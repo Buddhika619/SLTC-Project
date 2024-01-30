@@ -1,11 +1,15 @@
 import { v4 as uuidv4 } from "uuid";
+import { QueryTypes } from "sequelize";
 import {
   createSession,
   getAllSessions,
   getSessionById,
   updateSessionById,
   deleteSessionById,
-} from "../models/sessionModel.js";
+  getParallelSessions,
+} from "../models/sessionsModel.js";
+import { getSessionLocationById } from "../models/sessionLocationModel.js";
+import { getCourseById, getCoursesByTeacherID } from "../models/courseModel.js";
 
 // @desc create session
 // @route POST /api/session
@@ -13,14 +17,75 @@ import {
 
 const createSessionHandler = async (req, res, next) => {
   try {
-    const { courseID, date, startTime, minutes, locationID } = req.body;
+    const { courseID, dateTime, minutes, locationID } = req.body;
 
-    if (!courseID || !date || !startTime || !minutes || !locationID) {
+    if (!courseID || !dateTime || !minutes || !locationID) {
       res.status(400);
       throw new Error("Fields cannot be empty");
     }
 
-    const session = await createSession(uuidv4(), courseID, date, startTime, minutes, locationID);
+    const checkDateTime = new Date(dateTime);
+    const currentTime = new Date();
+
+    if (checkDateTime < currentTime) {
+      res.status(400);
+      throw new Error("Session must be in a future time");
+    }
+
+    const results = await getParallelSessions(dateTime, minutes);
+
+    if (results.length > 0) {
+      const [locationInfo, courseInfo] = await Promise.all([
+        getSessionLocationById(locationID),
+        getCourseById(courseID),
+      ]);
+
+      const teacherCourses = await getCoursesByTeacherID(courseInfo.teacherID);
+
+      const teacherIDsArray = teacherCourses.map((course) => course.teacherID);
+
+      for (const item of results) {
+        if (
+          courseInfo.year === item.course.year &&
+          courseInfo.facultyID === item.course.facultyID
+        ) {
+          res.status(400);
+          throw new Error(
+            "Cant have multiple sessions at same time for students which are in same faculty and same year"
+          );
+        }
+
+        if (item.session_location.locationID === locationInfo.locationID) {
+          res.status(400);
+          throw new Error("Cant have multiple sessions at same location");
+        }
+
+        const techerexists = teacherIDsArray.includes(item.course.teacherID);
+
+        if (techerexists) {
+          res.status(400);
+          throw new Error("The teacher has a another session at the time");
+        }
+      }
+
+      const session = await createSession(
+        uuidv4(),
+        courseID,
+        dateTime,
+        minutes,
+        locationID
+      );
+      res.status(201).json(session);
+      return;
+    }
+
+    const session = await createSession(
+      uuidv4(),
+      courseID,
+      dateTime,
+      minutes,
+      locationID
+    );
     res.status(201).json(session);
   } catch (error) {
     next(error);

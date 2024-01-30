@@ -16,11 +16,12 @@ router
   .get(basicAuth, adminAccess, getAttendanceListHandler)
   .post(basicAuth, createAttendanceHandler);
 
-router.route("/single").post(basicAuth, getAttendanceByIdHandler);
 
-router
-  .route("/:id")
+  router
+  .route("/:studentID/:courseID")
+  .get(basicAuth, adminAccess, getAttendanceByIdHandler)
   .put(basicAuth, adminAccess, updateAttendanceHandler)
-  .post(basicAuth, deleteAttendanceHandler);
+  .delete(basicAuth, adminAccess, deleteAttendanceHandler);
+
 
 export default router;

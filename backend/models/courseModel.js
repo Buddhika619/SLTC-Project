@@ -2,6 +2,7 @@ import { DataTypes } from "sequelize";
 import db from "../config/db.js";
 import Teacher from "./teacherModel.js";
 import Faculty from "./facultyModel.js";
+import User from "./userModel.js";
 
 const Course = db.define("course", {
   courseID: {
@@ -81,6 +82,16 @@ export const getAllCourses = async () => {
   return courses;
 };
 
+
+export const getCoursesByTeacherID = async (teacherID) => {
+  const courses = await Course.findAll({
+    where: {
+      teacherID: teacherID,
+    },
+  });
+
+  return courses;
+};
 // Read course by ID
 export const getCourseById = async (id) => {
   const course = await Course.findByPk(id, {

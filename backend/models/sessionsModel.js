@@ -1,4 +1,4 @@
-import { DataTypes } from "sequelize";
+import { DataTypes, Op } from "sequelize";
 import db from "../config/db.js";
 import Course from "./courseModel.js";
 import SessionLocation from "./sessionLocationModel.js";
@@ -13,17 +13,14 @@ const Session = db.define("session", {
     type: DataTypes.UUID,
     allowNull: false,
   },
-  date: {
+  dateTime: {
     type: DataTypes.DATE,
-    allowNull: false
+    allowNull: false,
   },
-  startTime: {
-    type: DataTypes.TIME,
-    allowNull: false
-  },
+
   minutes: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false,
   },
   locationID: {
     type: DataTypes.UUID,
@@ -33,22 +30,29 @@ const Session = db.define("session", {
 });
 
 // Define association with Course model
-Session.belongsTo(Course, { foreignKey: "courseID", onDelete: "CASCADE",  });
-Session.belongsTo(SessionLocation, { foreignKey: "locationID", onDelete: "CASCADE",  });
-
+Session.belongsTo(Course, { foreignKey: "courseID", onDelete: "CASCADE" });
+Session.belongsTo(SessionLocation, {
+  foreignKey: "locationID",
+  onDelete: "CASCADE",
+});
 
 export default Session;
-
 
 // reusable queries =================================================================
 
 // Create a new session
-export const createSession = async (sessionID, courseID, date, startTime, minutes, locationID) => {
+export const createSession = async (
+  sessionID,
+  courseID,
+  dateTime,
+  minutes,
+  locationID
+) => {
   const session = await Session.create({
     sessionID,
     courseID: courseID,
-    date: date,
-    startTime: startTime,
+    dateTime: dateTime,
+
     minutes: minutes,
     locationID: locationID,
   });
@@ -56,25 +60,52 @@ export const createSession = async (sessionID, courseID, date, startTime, minute
   return session;
 };
 
+export const getParallelSessions = async (dateTime, minutes) => {
+  const originalDate = new Date(dateTime);
+  const utcDate = new Date(originalDate.toUTCString());
+  
+  // Add minutes to the UTC date to get the end time
+  const endDate = new Date(utcDate.getTime() + minutes * 60000);
+
+  const results = await Session.findAll({
+    where: {
+      dateTime: {
+        [Op.between]: [utcDate, endDate],
+      },
+    },
+
+    include: [
+      {
+        model: Course, // Assuming you have a Course model
+
+      },
+      {
+        model: SessionLocation, // Assuming you have a Location model
+
+      },
+    ]
+  });
+
+  return results;
+};
 // Read all sessions
 export const getAllSessions = async () => {
   const sessions = await Session.findAll({
-    attributes: ["sessionID", "courseID", "date", "startTime", "minutes"],
     include: [
       {
         model: Course,
         // attributes: ["courseID", "courseName", "teacherID", "facultyID", "year"],
-        include : [
+        include: [
           {
             model: Teacher,
             include: [
               {
                 model: userID,
-                exclude: ['password'],
-              }
-            ]
-          }
-        ]
+                exclude: ["password"],
+              },
+            ],
+          },
+        ],
       },
       {
         model: SessionLocation,
@@ -89,26 +120,23 @@ export const getAllSessions = async () => {
 // Read session by ID
 export const getSessionById = async (id) => {
   const session = await Session.findByPk(id, {
-    attributes: ["sessionID", "courseID", "date", "startTime", "minutes"],
     include: [
       {
         model: Course,
-        include : [
+        include: [
           {
             model: Teacher,
             include: [
               {
                 model: userID,
-                exclude: ['password'],
-              }
-            ]
-          }
-        ]
-       
+                exclude: ["password"],
+              },
+            ],
+          },
+        ],
       },
       {
         model: SessionLocation,
-       
       },
     ],
   });

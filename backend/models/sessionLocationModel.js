@@ -11,6 +11,7 @@ const SessionLocation = db.define("session_location", {
   },
   name: {
     type: DataTypes.STRING,
+    unique: true,
     allowNull: false,
   },
   facultyID: {

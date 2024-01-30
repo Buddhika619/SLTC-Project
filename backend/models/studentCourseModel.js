@@ -12,16 +12,15 @@ const StudentsCourses = db.define(
     studentID: {
       type: DataTypes.UUID,
       allowNull: false,
+      primaryKey: true
     },
     courseID: {
       type: DataTypes.UUID,
       allowNull: false,
+      primaryKey: true
     },
   },
-  {
-    // Define a composite primary key
-    primaryKey: true,
-  }
+
 );
 
 // Define associations with Student and Course models

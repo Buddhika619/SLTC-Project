@@ -6,6 +6,8 @@ import {
   updateStudentCourseRelationshipByIds,
   deleteStudentCourseRelationshipByIds,
 } from "../models/studentCourseModel.js";
+import { getStudentByPK, getStudentByUserId } from "../models/studentModel.js";
+import { getCourseById } from "../models/courseModel.js";
 
 // @desc Create a new student-course relationship
 // @route POST /api/students-courses
@@ -13,14 +15,31 @@ import {
 
 const createStudentCourseRelationshipHandler = async (req, res, next) => {
   try {
-    const { studentID, courseID } = req.body;
-
-    if (!studentID || !courseID) {
+    const { userID, courseID } = req.body;
+    let relationship;
+    if (!userID || !courseID) {
       res.status(400);
       throw new Error("Fields cannot be empty");
     }
 
-    const relationship = await createStudentCourseRelationship(studentID, courseID);
+    const student = await getStudentByUserId(userID);
+    const course = await getCourseById(courseID);
+
+    if(student && course) {
+      if(student.year === course.year && student.facultyID == course.facultyID) {
+     
+         relationship = await createStudentCourseRelationship(student.studentID, courseID);
+      }else {
+        res.status(400);
+        throw new Error("Student does not eligible to this course");
+      }
+    } else {
+      res.status(400);
+        throw new Error("Invalid IDs");
+    }
+  
+
+
     res.status(201).json(relationship);
   } catch (error) {
     next(error);

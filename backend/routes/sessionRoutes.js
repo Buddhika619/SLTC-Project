@@ -2,24 +2,24 @@ import express from "express";
 const router = express.Router();
 
 import {
-  createSessionLocationHandler,
-  getAllSessionLocationsHandler,
-  getSessionLocationByIdHandler,
-  updateSessionLocationByIdHandler,
-  deleteSessionLocationByIdHandler,
-} from "../controllers/sessionLocationController.js";
+  createSessionHandler,
+  getSessionByIdHandler,
+  updateSessionByIdHandler,
+  getAllSessionsHandler,
+  deleteSessionByIdHandler,
+} from "../controllers/sessionController.js";
 
 import { basicAuth, adminAccess } from "../middleware/authMiddleware.js";
 
 router
   .route("/")
-  .post(basicAuth, adminAccess, createSessionLocationHandler)
-  .get(basicAuth, adminAccess, getAllSessionLocationsHandler);
+  .post(basicAuth, adminAccess, createSessionHandler)
+  .get(basicAuth, adminAccess, getAllSessionsHandler);
 
-router
-  .route("/:id")
-  .get(basicAuth, adminAccess, getSessionLocationByIdHandler)
-  .put(basicAuth, adminAccess, updateSessionLocationByIdHandler)
-  .delete(basicAuth, adminAccess, deleteSessionLocationByIdHandler);
+// router
+//   .route("/:id")
+//   .get(basicAuth, adminAccess, getSessionByIdHandler)
+//   .put(basicAuth, adminAccess, updateSessionByIdHandler)
+//   .delete(basicAuth, adminAccess, deleteSessionByIdHandler);
 
 export default router;
