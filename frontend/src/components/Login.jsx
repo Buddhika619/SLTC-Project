@@ -3,12 +3,12 @@ import { loginFields } from '../constants/formFields'
 import FormAction from './FormActions'
 import FormExtra from './FormExtra'
 import Input from './Input'
-import axios from 'axios'
+
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { login } from '../actions/userActions'
-import { resetErrors } from '../reducers/userSlice'
+import { login } from '../api/authEndPoints'
+
 const fields = loginFields
 
 let fieldsState = {}
@@ -17,9 +17,13 @@ fields.forEach((field) => (fieldsState[field.id] = ''))
 
 export default function Login() {
   const [loginState, setLoginState] = useState(fieldsState)
+  const [errorCount, setErrorCount] = useState(0)
 
   const handleChange = (e) => {
-    setLoginState({ ...loginState, [e.target.id]: e.target.value })
+    setLoginState((prevState) => ({
+      ...prevState,
+      [e.target.id]: e.target.value
+    }));
   }
 
   const handleSubmit = (e) => {
@@ -27,30 +31,31 @@ export default function Login() {
     authenticateUser(loginState)
   }
 
-  const userLogin = useSelector((state) => state.userLogin)
-  const { loading, error, userInfo } = userLogin
+  const auth = useSelector((state) => state.auth)
+  const { loading, error, userInfo } = auth
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  let { search } = useLocation()
-
-  const redirect = search ? search.split('=')[1] : '/admin'
   
-
+  
+ console.log('iam at comp' + userInfo)
 
   
   useEffect(() => {
-    dispatch(resetErrors()) 
+
     if (userInfo) {
-      navigate(redirect)
+      navigate('/admin')
     }
-  }, [navigate, userInfo, redirect])
+  }, [navigate, userInfo])
 
 
+  useEffect(() => {
+    if (error && errorCount === 0) {
+      toast.error(error)
+      setErrorCount(1)
+    }
+  }, [error, errorCount]);
 
-  if (error) {
-    toast.error(error)
-  }
 
   if (loading) {
     return <h3>Loading........</h3>
@@ -58,7 +63,9 @@ export default function Login() {
 
   //Handle Login API Integration here
   const authenticateUser = (loginState) => {
-    dispatch(login(loginState))
+    setErrorCount(0)
+    dispatch(login(loginState, 'NONAC'))
+   
   }
 
   return (
@@ -80,7 +87,7 @@ export default function Login() {
         ))}
       </div>
 
-      <FormExtra />
+    
       <FormAction handleSubmit={handleSubmit} text='Login' />
     </form>
   )

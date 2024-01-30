@@ -1,67 +1,73 @@
-import { useEffect, useState } from 'react'
-import { toast } from 'react-toastify'
-import { signupFields } from '../constants/formFields'
-import FormAction from './FormActions'
-import Input from './Input'
-import { useDispatch, useSelector } from 'react-redux'
-import { register } from '../actions/userActions'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { resetErrors } from '../reducers/userSlice'
-const fields = signupFields
-let fieldsState = {}
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { signupFields } from "../constants/formFields";
+import FormAction from "./FormActions";
+import Input from "./Input";
+import { useDispatch, useSelector } from "react-redux";
+import { register } from "../api/authEndPoints";
+import { useLocation, useNavigate } from "react-router-dom";
+import { resetAuthState } from "../reducers/authSlice";
 
-fields.forEach((field) => (fieldsState[field.id] = ''))
+const fields = signupFields;
+let fieldsState = {};
+
+fields.forEach((field) => (fieldsState[field.id] = ""));
 
 export default function Signup() {
-  
-  const [signupState, setSignupState] = useState(fieldsState)
+  const [signupState, setSignupState] = useState(fieldsState);
   const handleChange = (e) =>
-    setSignupState({ ...signupState, [e.target.id]: e.target.value })
+    setSignupState((prevState) => ({ ...prevState, [e.target.id]: e.target.value }));
 
   const handleSubmit = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (signupState.password !== signupState.confirmpassword) {
-      toast.error('Password not matching!')
-    }else{
-      createAccount(signupState)
+      toast.error("Password not matching!");
+    } else {
+      createAccount(signupState);
     }
-    
-  }
+  };
 
-
-  const dispatch = useDispatch()
-  const userRegister = useSelector((state) => state.userLogin)
-  const { loading, error, userInfo } = userRegister
-  const navigate = useNavigate()
-  let { search } = useLocation()
-
-  const redirect = search ? search.split('=')[1] : '/admin'
-
+  const dispatch = useDispatch();
+  const userRegister = useSelector((state) => state.auth);
+  const { loading, error, success } = userRegister;
+  const [errorCount, setErrorCount] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    dispatch(resetErrors()) // reset error msg
-    if (userInfo) {
-      navigate(redirect)
+    if (success) {
+
+      setSignupState(fieldsState);
+      toast.success("Account created!");
+      dispatch(resetAuthState())
+      
     }
-  }, [navigate, userInfo, redirect])
+  }, [navigate, success,dispatch]);
 
-
+  useEffect(() => {
+    if (error && errorCount === 0) {
+      setSignupState(fieldsState);
+      toast.error(error);
+      setErrorCount(1);
+      dispatch(resetAuthState())
+    }
+  }, [error, errorCount]);
 
   const createAccount = async (signupState) => {
-    dispatch(register(signupState))
-  }
+    setErrorCount(0);
+    dispatch(register(signupState));
+  };
 
-  if(loading) {
-    return(
+  if (loading) {
+    return (
       <>
-       <h3>Loading...</h3>
+        <h3>Loading...</h3>
       </>
-    )
+    );
   }
 
   return (
-    <form className='mt-8 space-y-6' onSubmit={handleSubmit}>
-      <div className=''>
+    <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+      <div className="">
         {fields.map((field) => (
           <Input
             key={field.id}
@@ -76,8 +82,8 @@ export default function Signup() {
             placeholder={field.placeholder}
           />
         ))}
-        <FormAction handleSubmit={handleSubmit} text='Signup' />
+        <FormAction handleSubmit={handleSubmit} text="Signup" />
       </div>
     </form>
-  )
+  );
 }

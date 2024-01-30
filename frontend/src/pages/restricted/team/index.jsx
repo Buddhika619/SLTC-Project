@@ -1,10 +1,11 @@
-import { Box, Button,  useTheme } from '@mui/material'
-import { DataGrid} from '@mui/x-data-grid'
+import { Box, Button, Typography, useTheme } from '@mui/material'
+import { DataGrid, GridToolbar } from '@mui/x-data-grid'
 import { tokens } from '../../theme'
-
-import DeleteOutline from '@mui/icons-material/DeleteOutline'
+import { mockDataTeam } from '../../data/mockData'
+import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined'
+import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined'
+import SecurityOutlinedIcon from '@mui/icons-material/SecurityOutlined'
 import DesignServices from '@mui/icons-material/DesignServices'
-import Add from '@mui/icons-material/Add'
 
 import Header from '../../components/Header'
 import AdminHeader from '../../components/AdminHeader'
@@ -17,58 +18,43 @@ import {
   GridToolbarDensitySelector,
 } from '@mui/x-data-grid'
 import { useDispatch, useSelector } from 'react-redux'
-import { listUsers } from '../../actions/userActions'
-import { useNavigate } from 'react-router-dom'
-import { listCustomers, removeCustomer } from '../../actions/customerActions'
-import { createCustomerReset } from '../../reducers/customerSlice'
 
-const Customer = () => {
+import { useNavigate } from 'react-router-dom'
+
+const Team = () => {
   const theme = useTheme()
   const colors = tokens(theme.palette.mode)
   const [selectedRows, setSelectedRows] = useState([])
   const navigate = useNavigate()
 
+  const updateUser = () => {
+    console.log('bam')
+    navigate('/admin/userupdate/'+selectedRows[0].id)
+  }
 
+  const users = useSelector((state) => state.userLogin)
 
-
-
-  const customersList = useSelector((state) => state.customer)
-  const { loading, error,success, customers } = customersList
-
-  console.log(customers)
   const dispatch = useDispatch()
   console.log(selectedRows)
 
-  useEffect(() => {
-    dispatch(createCustomerReset())
-    dispatch(listCustomers())
-  }, [])
 
 
-  console.log(customers)
-  const updateUser = () => {
-    console.log('bam')
-    navigate('/admin/customerupdate/'+selectedRows[0].id)
-  }
-
-const  createUser = () => {
-  navigate('/admin/createcustomer')
-}
-
-  const removeUser = () => {
-      dispatch(removeCustomer(selectedRows[0].id))
-      dispatch(listCustomers())
-  }
 
   const columns = [
-    { field: 'id', headerName: 'ID', flex: 1 },
+    { field: 'id', headerName: 'ID', flex: 1.5 },
     {
       field: 'name',
       headerName: 'Name',
       flex: 1,
       cellClassName: 'name-column--cell',
     },
-
+    {
+      field: 'age',
+      headerName: 'Age',
+      type: 'number',
+      headerAlign: 'left',
+      align: 'left',
+    },
     {
       field: 'phone',
       headerName: 'Phone Number',
@@ -81,17 +67,43 @@ const  createUser = () => {
     },
 
     {
-      field: 'nic',
-      headerName: 'NIC',
-      flex: 1,
-    },
-    {
       field: 'address',
       headerName: 'Address',
       flex: 1,
     },
-   
-    
+    {
+      field: 'accessLevel',
+      headerName: 'Access Level',
+      
+      flex: 1,
+      renderCell: ({ row: { type } }) => {
+        return (
+          <Box
+            width='60%'
+            m=''
+            p='5px'
+            display='flex'
+            justifyContent='center'
+            backgroundColor={
+              type === 'admin'
+                ? colors.greenAccent[600]
+                : type === 'manager'
+                ? colors.greenAccent[700]
+                : colors.greenAccent[700]
+            }
+            borderRadius='4px'
+            
+          >
+            {type === 'admin' && <AdminPanelSettingsOutlinedIcon />}
+            {type === 'manager' && <SecurityOutlinedIcon />}
+            {type === 'user' && <LockOpenOutlinedIcon />}
+            <Typography color={colors.grey[100]} sx={{ ml: '5px' }}>
+              {type}
+            </Typography>
+          </Box>
+        )
+      },
+    },
   ]
 
   const CustomToolbar = () => {
@@ -102,40 +114,14 @@ const  createUser = () => {
         <GridToolbarDensitySelector />
         <GridToolbarExport printOptions={{ disableToolbarButton: false }} />
 
-    
-          <Button
-          className='p-0 pe-2'
-          variant="text"
-         
-          onClick={() => createUser()}
-        >
-          <Add fontSize='small' />
-          <span className='px-2'>Add Customer</span>
-        </Button>
-
-
-
         {selectedRows.length === 1 && (
           <Button
           className='p-0 pe-2'
-          variant="text"
-         
-          onClick={() => removeUser()}
-        >
-          <DeleteOutline fontSize='small' />
-          <span className='px-2'>Remove Customer</span>
-        </Button>
-        )}
-
-        {selectedRows.length === 1 && (
-          <Button
-          className='p-0 pe-2'
-          variant="text"
-         
+          variant='contained'
           onClick={() => updateUser()}
         >
           <DesignServices fontSize='small' />
-          <span className='px-2'>Update Customer</span>
+          <span className='px-2'>Update User</span>
         </Button>
         )}
 
@@ -144,14 +130,9 @@ const  createUser = () => {
     )
   }
 
-
-  if(loading) {
-    <h3>Loading....</h3>
-  }
-
   return (
     <Box m='20px'>
-      <AdminHeader title='CUSTOMERS' subtitle='Managing Customers' />
+      <AdminHeader title='TEAM' subtitle='Managing Team Members' />
       <Box
         m='40px 0 0 0'
         height='75vh'
@@ -185,12 +166,12 @@ const  createUser = () => {
         }}
       >
         <DataGrid
-          rows={customers}
+          rows={[]}
           columns={columns}
           checkboxSelection
           onSelectionModelChange={(ids) => {
             const selectedIDs = new Set(ids)
-            const selectedRows = customers.filter((row) =>
+            const selectedRows = [].filter((row) =>
               selectedIDs.has(row.id)
             )
             setSelectedRows(selectedRows)
@@ -204,4 +185,4 @@ const  createUser = () => {
   )
 }
 
-export default Customer
+export default Team

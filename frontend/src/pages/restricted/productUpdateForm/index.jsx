@@ -41,15 +41,14 @@ const UserUpdateForm = () => {
     description: '',
   })
 
-  const users = useSelector((state) => state.userLogin)
-  const { userInfo } = users
+
 
   const {
     isLoading,
     isError,
     error,
     data: product,
-  } = useQuery(['product', userInfo.token, id], getProductById)
+  } = useQuery(['product', id], getProductById)
 
   const addProductMutation = useMutation( updateProduct, {
     onSuccess: () => {
@@ -82,7 +81,7 @@ const UserUpdateForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    addProductMutation.mutate({ ...form, token: userInfo.token, id })
+    addProductMutation.mutate({ ...form, token:  id })
   }
 
   const change = (e) => {
@@ -181,3 +180,17 @@ const UserUpdateForm = () => {
 }
 
 export default UserUpdateForm
+
+// const navigate = useNavigate()
+// const [form, setForm] = useState({
+//   firstName: '',
+//   lastName: '',
+//   email: '',
+//   password: '',
+//   role: ' ',
+//   isAdmin: false,
+//   isApproved: false,
+//   faculty: '',
+//   date: '',
+//   year: ''
+// })

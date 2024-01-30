@@ -64,21 +64,22 @@ export const createUser = async (
 };
 
 export const findAllUsers = async () => {
+
   const users = await User.findAll({
-    exclude: ["password"],
+    attributes: { exclude: ['password'] },
   });
   return users;
 };
 
+
 export const unapprovedUsers = async () => {
-  const users = await User.findAll(
-    { where: { isApproved: false } },
-    {
-      exclude: ["password"],
-    }
-  );
+  const users = await User.findAll({
+    where: { isApproved: false },
+    attributes: { exclude: ["password"] },
+  });
   return users;
 };
+
 
 export const getUserById = async (id) => {
   const user = await User.findByPk(id, {

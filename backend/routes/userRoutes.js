@@ -30,13 +30,13 @@ router.route("/").post(registerUser).get(basicAuth, adminAccess, getUsers);
 
 router.route("/login/:role").post(authUser);
 
-// router.route("/unapproved").get(basicAuth, adminAccess, getUnapprovedUsers);
+router.route("/unapproved").get(basicAuth, adminAccess, getUnapprovedUsers);
 
 router
   .route("/:id")
   .get(basicAuth, getSingleUser)
   .put(basicAuth, adminAccess, updateUser)
-  // .delete(basicAuth, adminAccess, deleteUser);
+  .delete(basicAuth, adminAccess, deleteUser);
 
 // router.route("/teachers").get(basicAuth, adminAccess, getTeachersList);
 // router.route("/staff").get(basicAuth, adminAccess, getStaffListData);
