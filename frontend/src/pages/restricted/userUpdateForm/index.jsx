@@ -10,26 +10,22 @@ import {
 import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import Header from "../../../components/Header";
+
 import AdminHeader from "../../../components/AdminHeader";
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useMemo, useRef, useState } from "react";
 
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
-import ButtonGroup from "@mui/material/ButtonGroup";
-import { toast } from "react-toastify";
-
-import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
+import { updateUserById } from "../../../api/userEndPoints";
+import { useMutation } from "react-query";
+import { toast } from "react-toastify";
 
 const checkoutSchema = yup.object().shape({
   firstName: yup.string().required("required"),
   lastName: yup.string().required("required"),
   email: yup.string().required("required"),
-  password: yup.string().required("required"),
   role: yup.string().required("required"),
   faculty: yup.string().required("required"),
   date: yup.date().required("required"),
@@ -42,36 +38,114 @@ const checkoutSchema = yup.object().shape({
 
 const UserUpdateForm = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
-  const [form, setForm] = useState({
-    isApproved: false,
-    isAdmin: false,
-  });
+  const { state: userInfo } = useLocation();
 
-  const [formic] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    role: "",
-    year: "",
+  const [formic, setFormicState] = useState({});
+  const [form, setForm] = useState({});
 
-    faculty: "",
-    date: "",
+  const headerTextRef = useRef("");
+  const headerSubRef = useRef("");
+
+  console.log(userInfo);
+  useMemo(() => {
+    if (userInfo.teacherID) {
+      headerTextRef.current = "TEACHER";
+      headerSubRef.current = "Teacher";
+
+      setForm({
+        isApproved: userInfo.user.isApproved,
+        isAdmin: userInfo.user.isAdmin,
+      });
+      setFormicState({
+        firstName: userInfo.user.firstName,
+        lastName: userInfo.user.lastName,
+        email: userInfo.user.email,
+        password: "",
+        role: "TEACHER",
+        year: userInfo?.year ?? "",
+        faculty: userInfo.faculty.department,
+        date: new Date(userInfo.hireDate),
+      });
+    } else if (userInfo.staffID) {
+      headerTextRef.current = "STAFF";
+      headerSubRef.current = "Staff";
+      setForm({
+        isApproved: userInfo.user.isApproved,
+        isAdmin: userInfo.user.isAdmin,
+      });
+      setFormicState({
+        firstName: userInfo.user.firstName,
+        lastName: userInfo.user.lastName,
+        email: userInfo.user.email,
+        password: "",
+        role: "NONAC",
+        year: userInfo?.year ?? "",
+        faculty: userInfo.faculty.department,
+        date: new Date(userInfo.hireDate),
+      });
+    } else if (userInfo.studentID) {
+      headerTextRef.current = "STUDENT";
+      headerSubRef.current = "Student";
+      setFormicState({
+        firstName: userInfo.user.firstName,
+        lastName: userInfo.user.lastName,
+        email: userInfo.user.email,
+        password: "",
+        role: "STUDENT",
+        year: userInfo?.year ?? "",
+        faculty: userInfo.faculty.department,
+        date: new Date(userInfo.enrollmentDate),
+      });
+    } else {
+      // Default case
+      headerTextRef.current = "USER";
+      headerSubRef.current = "User";
+      setFormicState({
+        firstName: userInfo.firstName,
+        lastName: userInfo.lastName,
+        email: userInfo.email,
+        password: "",
+        role: userInfo?.role ?? "",
+        year: userInfo?.role ?? "",
+        faculty: userInfo?.role ?? "",
+        date: userInfo?.role ?? "",
+      });
+    }
+  }, [userInfo]);
+
+  const updateUserMutation = useMutation(updateUserById, {
+    onMutate: () => {
+      setLoading(true);
+    },
+    onSuccess: (data, variable) => {
+      setLoading(false);
+
+      toast.success("User Updated!");
+
+      if (variable.role === "TEACHER") {
+        navigate("/admin/teacherlist");
+      } else if (variable.role === "STUDENT") {
+        navigate("/admin/studnetlist");
+      } else {
+        navigate("/admin/nonaclist");
+      }
+    },
+    onError: (err) => {
+      setLoading(false);
+      toast.error(err.response.data.message);
+    },
   });
 
   const isNonMobile = useMediaQuery("(min-width:600px)");
 
   const handleFormSubmit = (value) => {
-    console.log("dd");
-    console.log({...value,...form});
-
-    // dispatch(updateUser({ _id: id, isAdmin, role }))
+    updateUserMutation.mutate({ ...value, ...form, userID: userInfo.userID });
   };
 
   const change = (e) => {
     let boolean = null;
-  
 
     if (e.target.value === "on") {
       boolean = !form[e.target.id];
@@ -79,13 +153,20 @@ const UserUpdateForm = () => {
 
     setForm((prevState) => ({
       ...prevState,
-      [e.target.id ?? e.target.name]: boolean ?? e.target.value, //if e.target.id is boolean set as true or false, if it's null set as e.target.value ?? ---nulish operator
+      [e.target.id ?? e.target.name]: boolean ?? e.target.value,
     }));
   };
 
+  if (loading) {
+    return <h1>Loading....</h1>;
+  }
+
   return (
     <Box m="20px">
-      <AdminHeader title="UPDATE USER" subtitle="Update User Profile" />
+      <AdminHeader
+        title={`UPDATE ${headerTextRef.current}`}
+        subtitle={`Update ${headerSubRef.current} Profile`}
+      />
 
       <Formik
         onSubmit={handleFormSubmit}
@@ -119,7 +200,7 @@ const UserUpdateForm = () => {
                 value={values.firstName}
                 name="firstName"
                 error={!!touched.firstName && !!errors.firstName}
-                helpertext  ={touched.firstName && errors.firstName}
+                helpertext={touched.firstName && errors.firstName}
                 sx={{ gridColumn: "span 2" }}
               />
 
@@ -179,16 +260,19 @@ const UserUpdateForm = () => {
                 fullWidth
                 variant="filled"
                 type="date"
-                label="Date"
+                label="Date Joined"
                 onChange={handleChange}
-                value={values.date}
+                value={
+                  values.date instanceof Date
+                    ? values.date.toISOString().split("T")[0]
+                    : values.date
+                }
                 id="date"
                 sx={{ gridColumn: "span 2" }}
                 error={!!touched.date && !!errors.date}
                 helperText={touched.date && errors.date}
               />
 
-            
               <FormControl sx={{ gridColumn: "span 2" }} value="id">
                 <InputLabel id="role" sx={{ gridColumn: "span 2" }} value="id">
                   Role
@@ -202,7 +286,6 @@ const UserUpdateForm = () => {
                   onChange={handleChange}
                   style={{ gridColumn: "span 2", backgroundColor: "#293040" }}
                   error={!!touched.role && !!errors.role}
-                 
                 >
                   <MenuItem value="STUDENT">Student</MenuItem>
                   <MenuItem value="TEACHER">Teacher</MenuItem>
@@ -228,7 +311,6 @@ const UserUpdateForm = () => {
                     onChange={handleChange}
                     style={{ gridColumn: "span 2", backgroundColor: "#293040" }}
                     error={!!touched.year && !!errors.year}
-                  
                   >
                     <MenuItem value="1">First Year</MenuItem>
                     <MenuItem value="2">Second Year</MenuItem>
@@ -239,12 +321,12 @@ const UserUpdateForm = () => {
                 </FormControl>
               )}
 
-<div style={{ gridColumn: "span 2", display: "flex" }}>
+              <div style={{ gridColumn: "span 2", display: "flex" }}>
                 <FormControlLabel
                   control={
                     <Switch
                       id="isApproved"
-                      checked={values.isApproved}
+                      checked={form.isApproved}
                       color="warning"
                       onChange={change}
                     />
@@ -252,7 +334,6 @@ const UserUpdateForm = () => {
                   label="Approved Account"
                   labelPlacement="start"
                   sx={{ marginRight: "100px" }}
-                  
                 />
 
                 <FormControlLabel
@@ -261,14 +342,13 @@ const UserUpdateForm = () => {
                   control={
                     <Switch
                       id="isAdmin"
-                      checked={values.isAdmin}
+                      checked={form.isAdmin}
                       color="warning"
                       onChange={change}
                     />
                   }
                 />
               </div>
-
             </Box>
             <Box display="flex" justifyContent="end" mt="20px">
               <Button type="submit" color="secondary" variant="contained">

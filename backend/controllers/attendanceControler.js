@@ -4,6 +4,7 @@ import {
   createAttendance,
   updateAttendance,
   deleteAttendance,
+  getAttendanceListforSingleStudent
 } from "../models/attendanceModel.js";
 import { v4 as uuidv4 } from "uuid";
 
@@ -20,11 +21,29 @@ const getAttendanceListHandler = async (req, res, next) => {
   }
 };
 
+
+// @desc Get all attendance records for a student
+// @route GET /api/attendance/student/:id
+// @access admin
+
+const getAttendanceForSingleStudentHandler = async (req, res, next) => {
+
+  try {
+    const attendanceList = await getAttendanceListforSingleStudent(req.params.id);
+
+    res.status(200).json(attendanceList);
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc Get a single attendance record by ID
 // @route POST /api/attendance/:studentID/:sessionID
 // @access ownData
 
 const getAttendanceByIdHandler = async (req, res, next) => {
+
+
   const { studentID, sessionID } = req.params;
   try {
     if (req.user.userID === req.params.id || req.user.isAdmin) {
@@ -50,6 +69,8 @@ const getAttendanceByIdHandler = async (req, res, next) => {
 const createAttendanceHandler = async (req, res, next) => {
   try {
     const { studentID, sessionID } = req.body;
+
+
 
     if (req.user.userID === req.params.id || req.user.isAdmin) {
       const createdAttendance = await createAttendance({
@@ -91,8 +112,10 @@ const updateAttendanceHandler = async (req, res, next) => {
 // @access admin
 
 const deleteAttendanceHandler = async (req, res, next) => {
+  console.log(req.params)
   try {
     const { studentID, sessionID } = req.params;
+   
     const deletedAttendance = await deleteAttendance(studentID, sessionID);
     res.status(200).json(deletedAttendance);
   } catch (error) {
@@ -106,4 +129,5 @@ export {
   createAttendanceHandler,
   updateAttendanceHandler,
   deleteAttendanceHandler,
+  getAttendanceForSingleStudentHandler
 };

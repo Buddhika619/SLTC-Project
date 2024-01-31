@@ -33,6 +33,11 @@ if (process.env.NODE_ENV === "development") {
 //parse req.body GET/POST
 app.use(express.json());
 app.use(helmet());
+
+
+app.get('/', (req, res) => {
+  res.send('api is running!')
+})
 //routes
 app.use("/api/users", userRoutes);
 app.use("/api/faculty", facultyRoutes);

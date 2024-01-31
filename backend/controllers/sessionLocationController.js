@@ -6,6 +6,10 @@ import {
   updateSessionLocationById,
   deleteSessionLocationById,
 } from "../models/sessionLocationModel.js";
+import {
+  findFacultyByDepartment,
+  getFacultyById,
+} from "../models/facultyModel.js";
 
 // @desc Create a new session location
 // @route POST /api/session-location
@@ -13,14 +17,22 @@ import {
 
 const createSessionLocationHandler = async (req, res, next) => {
   try {
-    const { name, facultyID } = req.body;
+    const { locationName, facultyName } = req.body;
 
-    if (!name || !facultyID) {
+    console.log(req.body)
+
+    if (!locationName || !facultyName) {
       res.status(400);
       throw new Error("Fields cannot be empty");
     }
 
-    const sessionLocation = await createSessionLocation(uuidv4(),name, facultyID);
+    const faculty = await findFacultyByDepartment(facultyName);
+
+    const sessionLocation = await createSessionLocation(
+      uuidv4(),
+      locationName,
+      faculty.facultyID
+    );
     res.status(201).json(sessionLocation);
   } catch (error) {
     next(error);
@@ -58,10 +70,15 @@ const getSessionLocationByIdHandler = async (req, res, next) => {
 // @access admin
 
 const updateSessionLocationByIdHandler = async (req, res, next) => {
-  const { name, facultyID } = req.body;
+  const { locationName: name, facultyID } = req.body;
+
+ console.log(req.body)
   try {
     const updates = { name, facultyID };
-    const sessionLocation = await updateSessionLocationById(req.params.id, updates);
+    const sessionLocation = await updateSessionLocationById(
+      req.params.id,
+      updates
+    );
     res.status(200).json(sessionLocation);
   } catch (error) {
     next(error);

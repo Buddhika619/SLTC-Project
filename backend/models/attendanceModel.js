@@ -57,6 +57,35 @@ export const getAttendanceList = async () => {
   return attendanceList;
 };
 
+
+export const getAttendanceListforSingleStudent = async (id) => {
+  const attendanceList = await Attendance.findAll({
+    where: {
+      studentID: id,
+    },
+    include: [
+      {
+        model: Student,
+        include: [
+          {
+            model: User,
+            exclude: ["password"],
+          },
+        ],
+      },
+      {
+        model: Session,
+        include: [
+          {
+            model: Course,
+          },
+        ],
+      },
+    ],
+  });
+  return attendanceList;
+};
+
 export const getAttendanceById = async (studentID, sessionID) => {
   const attendance = await Attendance.findByPk(
     {
@@ -101,6 +130,7 @@ export const updateAttendance = async (studentID, sessionID, updatedData) => {
 };
 
 export const deleteAttendance = async (studentID, sessionID) => {
+  console.log('session ids' + sessionID)
   const deletedAttendance = await Attendance.destroy({
     where: { studentID, sessionID },
   });

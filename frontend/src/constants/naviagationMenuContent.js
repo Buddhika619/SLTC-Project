@@ -1,18 +1,15 @@
 
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
-import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
-import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
-import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
-import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
-import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
-import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
-import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutlined";
-import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 
-import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
-
+import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact';
+import PsychologyAltIcon from '@mui/icons-material/PsychologyAlt';
+import EngineeringIcon from '@mui/icons-material/Engineering';
+import CorporateFareIcon from '@mui/icons-material/CorporateFare';
+import AutoStoriesIcon from '@mui/icons-material/AutoStories';
+import JoinFullIcon from '@mui/icons-material/JoinFull';
+import MyLocationIcon from '@mui/icons-material/MyLocation';
+import EditCalendarTwoToneIcon from '@mui/icons-material/EditCalendarTwoTone';
 
 export const navigationItems = [
   {
@@ -21,9 +18,61 @@ export const navigationItems = [
     icon: <HomeOutlinedIcon />,
   },
   {
-    title: "Manage Team",
+    title: "Manage Pending Users",
     to: "/admin/pendingusers",
     icon: <PersonAddAltIcon />,
   },
+
+  {
+    title: "Manage Teachers",
+    to: "/admin/teacherlist",
+    icon: <ConnectWithoutContactIcon />,
+  },
  
+  {
+    title: "Manage Students",
+    to: "/admin/studentlist",
+    icon: <PsychologyAltIcon />,
+  },
+
+  
+  {
+    title: "Manage Staff",
+    to: "/admin/nonaclist",
+    icon: <EngineeringIcon />,
+  },
+
+  
+  {
+    title: "Manage Faculties",
+    to: "/admin/facultylist",
+    icon: <CorporateFareIcon />,
+  },
+
+  {
+    title: "Manage Courses",
+    to: "/admin/courselist",
+    icon: <AutoStoriesIcon />,
+  },
+
+  {
+    title: "Manage Locations",
+    to: "/admin/locationlist",
+    icon: <MyLocationIcon />,
+  },
+
+  {
+    title: "Manage Sessions",
+    to: "/admin/sessionslist",
+    icon: <EditCalendarTwoToneIcon />,
+  },
+
+  {
+    title: "Students Courses",
+    to: "/admin/studnetcourse",
+    icon: <JoinFullIcon />,
+  },
+
+  
+
 ];

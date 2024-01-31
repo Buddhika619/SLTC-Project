@@ -46,6 +46,9 @@ const getAllCoursesHandler = async (req, res, next) => {
   }
 };
 
+
+
+
 // @desc View single course
 // @route GET /api/course/:id
 // @access admin
@@ -65,8 +68,9 @@ const getCourseByIdHandler = async (req, res, next) => {
 
 const updateCourseByIdHandler = async (req, res, next) => {
   const { courseName, teacherID, facultyID, year } = req.body;
+  console.log(req.body)
   try {
-    const updates = { courseName, teacherID, facultyID, year };
+    const updates = { courseName, teacherID, year };
     const course = await updateCourseById(req.params.id, updates);
 
     res.status(200).json(course);
@@ -94,4 +98,5 @@ export {
   getCourseByIdHandler,
   updateCourseByIdHandler,
   deleteCourseByIdHandler,
+  
 };

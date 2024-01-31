@@ -110,9 +110,12 @@ const getSessionByIdHandler = async (req, res, next) => {
 // @access admin
 
 const updateSessionByIdHandler = async (req, res, next) => {
-  const updates = req.body;
+  const {courseID,dateTime,minutes,locationID} = req.body;
+
+
+
   try {
-    const session = await updateSessionById(req.params.id, updates);
+    const session = await updateSessionById(req.params.id, {courseID, dateTime, minutes, locationID});
 
     res.status(200).json(session);
   } catch (error) {
@@ -125,6 +128,7 @@ const updateSessionByIdHandler = async (req, res, next) => {
 // @access admin
 
 const getAllSessionsHandler = async (req, res, next) => {
+
   try {
     const sessions = await getAllSessions();
 

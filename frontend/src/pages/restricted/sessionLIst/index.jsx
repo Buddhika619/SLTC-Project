@@ -20,12 +20,13 @@ import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 
 import { toast } from "react-toastify";
-import {
-  deletePendingUser,
-  viewPendingUsers,
-} from "../../../api/userEndPoints";
 
-const PendingUserList = () => {
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+
+import { deleteLocation, viewLocationList } from "../../../api/locationEndPoints";
+import { deleteSession, viewSessionList } from "../../../api/sessionEndPoints";
+
+const SessionList = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [selectedRows, setSelectedRows] = useState([]);
@@ -38,14 +39,13 @@ const PendingUserList = () => {
     isLoading,
     isError,
     error,
-    data: userlist,
-  } = useQuery("pendingUserList", viewPendingUsers);
+    data: sessionlist,
+  } = useQuery("sessionList", viewSessionList);
 
-  const deleteMutation = useMutation(deletePendingUser, {
+  const deleteMutation = useMutation(deleteSession, {
     onSuccess: () => {
-      queryClient.invalidateQueries("pendingUserList");
-      toast.success("User Removed!");
-      //   navigate('/admin/outmaterial')
+      queryClient.invalidateQueries("facultyList");
+      toast.success("Entry Removed!");
     },
     onError: (error) => {
       toast.error(error.response.data.message);
@@ -59,58 +59,110 @@ const PendingUserList = () => {
   } else if (isError) {
     return <p>{error.message}</p>;
   } else {
-    content = userlist;
+    content = sessionlist;
   }
 
-  const updateUser = () => {
-    console.log(selectedRows[0]);
-    navigate(`/admin/users/update`, {
+  const update = () => {
+    navigate(`/admin/session/update`, {
       state: { ...selectedRows[0] },
     });
   };
 
-  const removeUser = () => {
+  const create = () => {
+    navigate(`/admin/session/update`);
+  };
+
+  const remove = () => {
     if (window.confirm("Are you sure?")) {
-      deleteMutation.mutate(selectedRows[0].userID);
+      deleteMutation.mutate(selectedRows[0].sessionID);
     }
   };
 
   const columns = [
     {
-      field: "firstName",
-      headerName: "First Name",
-      flex: 1,
+      field: "id",
+      headerName: "Session ID",
+      width: 250,
       cellClassName: "name-column--cell",
     },
-
     {
-      field: "lastName",
-      headerName: "Last Name",
-      flex: 1,
+      field: "minutes",
+      headerName: "Minutes",
+      width: 60
+   
     },
-
+    {
+      field: "date",
+      headerName: "Date",
+      width: 150
+    
+    },
+    {
+        field: "time",
+        headerName: "Time",
+        width: 100
+      
+      },
+    {
+      field: "courseName",
+      headerName: "Course Name",
+      width: 250
+     
+    },
+    {
+      field: "year",
+      headerName: "Academic Year",
+      width: 100
+      
+    },
+    {
+      field: "teacherFirstName",
+      headerName: "Teacher First Name",
+      width: 120
+   
+    },
+    {
+      field: "teacherSecondName",
+      headerName: "Teacher Second Name",
+      width: 120
+    
+    },
     {
       field: "email",
-      headerName: "Email",
-      flex: 1,
+      headerName: "Teacher Email",
+      width: 200
+     
     },
-
     {
-      field: "isApproved",
-      headerName: "Account Approval",
-      flex: 1,
+      field: "location",
+      headerName: "Location Name",
+      width: 100
+    },
+    {
+      field: "faculty",
+      headerName: "Faculty",
+      width: 150
     },
   ];
+  
 
-  //   let rows = []
-  console.log(content[0].userID);
 
-  let rows = content?.map((content, key) => ({
-    id: content.userID,
-    firstName: content.firstName,
-    lastName: content.lastName,
-    email: content.email,
-    isApproved: content.isApproved,
+
+
+  let rows = content?.map((content) => ({
+    id: content?.sessionID,
+    minutes: content.minutes,
+    date: new Date(content?.dateTime).toDateString(),
+    time: new Date(content?.dateTime).toLocaleString().substring(10, 25),
+
+    courseName: content.course?.courseName,
+    year: content.course?.year,
+    teacherFirstName: content.course?.teacher?.user?.firstName,
+    teacherSecondName: content.course?.teacher?.user?.lastName,
+    email: content.course?.teacher?.user?.email,
+    location: content?.session_location?.name,
+    faculty: content?.session_location?.faculty.department
+
   }));
 
   const CustomToolbar = () => {
@@ -121,26 +173,23 @@ const PendingUserList = () => {
         <GridToolbarDensitySelector />
         <GridToolbarExport printOptions={{ disableToolbarButton: false }} />
 
+        <Button className="p-0 pe-2" variant="text" onClick={() => create()}>
+          <AddCircleOutlineIcon fontSize="small" />
+          <span className="px-2">Create</span>
+        </Button>
+
         {selectedRows.length === 1 && (
-          <Button
-            className="p-0 pe-2"
-            variant="text"
-            onClick={() => updateUser()}
-          >
+          <Button className="p-0 pe-2" variant="text" onClick={() => update()}>
             <DesignServices fontSize="small" />
-            <span className="px-2">Update User</span>
+            <span className="px-2">Update</span>
           </Button>
         )}
 
         {selectedRows.length === 1 && (
-          <Button
-            className="p-0 pe-2"
-            variant="text"
-            onClick={() => removeUser()}
-          >
+          <Button className="p-0 pe-2" variant="text" onClick={() => remove()}>
             <DeleteOutline fontSize="small" style={{ color: "red" }} />
             <span className="px-2" style={{ color: "red" }}>
-              Remove User
+              Remove
             </span>
           </Button>
         )}
@@ -150,7 +199,7 @@ const PendingUserList = () => {
 
   return (
     <Box m="20px">
-      <AdminHeader title="Pending Users" subtitle="Manage Pending Users" />
+      <AdminHeader title="Session List" subtitle="Manage Sessions" />
 
       <Box
         m="40px 0 0 0"
@@ -191,7 +240,7 @@ const PendingUserList = () => {
           onSelectionModelChange={(ids) => {
             const selectedIDs = new Set(ids);
             const selectedRows = content.filter((row) =>
-              selectedIDs.has(row.userID)
+              selectedIDs.has(row.sessionID)
             );
 
             setSelectedRows(selectedRows);
@@ -205,4 +254,4 @@ const PendingUserList = () => {
   );
 };
 
-export default PendingUserList;
+export default SessionList;

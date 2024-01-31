@@ -20,10 +20,10 @@ router
   .post(basicAuth, adminAccess, createFacultyHandler)
   .get(basicAuth, adminAccess, getAllFacultiesHandler);
 
-// router
-//   .route("/:id")
-//   .get(basicAuth, adminAccess, getFacultyByIdHandler)
-//   .put(basicAuth, adminAccess, updateFacultyByIdHandler)
-//   .put(basicAuth, adminAccess, deleteFacultyByIdHandler);
+router
+  .route("/:id")
+  .get(basicAuth, adminAccess, getFacultyByIdHandler)
+  .put(basicAuth, adminAccess, updateFacultyByIdHandler)
+  .delete(basicAuth, adminAccess, deleteFacultyByIdHandler);
 
 export default router;

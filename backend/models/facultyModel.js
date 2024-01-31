@@ -53,7 +53,7 @@ export const updateFacultyById = async (id, updates) => {
     throw new Error("Faculty not found");
   }
 
- 
+ console.log('ddddddddddaa')
   await faculty.update(updates);
 
   return faculty;

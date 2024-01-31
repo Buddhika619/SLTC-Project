@@ -81,6 +81,28 @@ export const getAllStudentCourseRelationships = async () => {
   return relationships;
 };
 
+
+export const getAllStudentCourseRelationshipsByUserID = async (id) => {
+  const relationships = await StudentsCourses.findAll({
+    where: {
+      studentID: id
+    },
+    include: [
+      
+      {
+        model: Course,
+    
+        include: [
+          {
+            model: Faculty,
+          },
+        ],
+      },
+    ],
+  });
+
+  return relationships;
+};
 // Read student-course relationship by IDs
 export const getStudentCourseRelationshipByIds = async (
   studentID,

@@ -3,6 +3,8 @@ import db from "../config/db.js";
 import Course from "./courseModel.js";
 import SessionLocation from "./sessionLocationModel.js";
 import Teacher from "./teacherModel.js";
+import User from "./userModel.js";
+import Faculty from "./facultyModel.js";
 
 const Session = db.define("session", {
   sessionID: {
@@ -100,8 +102,8 @@ export const getAllSessions = async () => {
             model: Teacher,
             include: [
               {
-                model: userID,
-                exclude: ["password"],
+                model: User,
+                attributes: { exclude: ["password"] },
               },
             ],
           },
@@ -109,7 +111,12 @@ export const getAllSessions = async () => {
       },
       {
         model: SessionLocation,
-        // attributes: ["locationID", "name"],
+        include: [
+          {
+            model: Faculty,
+  
+          },
+        ],
       },
     ],
   });
@@ -147,7 +154,7 @@ export const getSessionById = async (id) => {
 // Update session by ID
 export const updateSessionById = async (id, updates) => {
   const session = await Session.findByPk(id);
-
+  console.log(updates)
   if (!session) {
     throw new Error("Session not found");
   }

@@ -55,6 +55,7 @@ export const getStudentList = async () => {
 }
 
 export const getStudentByUserId = async (userID) => {
+
   const student = await Student.findOne({
     where: { userID: userID },
     include: [
@@ -69,15 +70,13 @@ export const getStudentByUserId = async (userID) => {
   return student;
 };
 export const getStudentByPK = async (studentID) => {
-  const student = await Student.findByPk({
-    studentID,
   
+  const student = await Student.findByPk(studentID, {
     include: [
       {
         model: User,
-        exclude: [ 'password'],
+        attributes: { exclude: ['password'] },
       },
-      
     ],
   });
 

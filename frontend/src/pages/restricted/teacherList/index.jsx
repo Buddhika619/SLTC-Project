@@ -20,12 +20,9 @@ import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 
 import { toast } from "react-toastify";
-import {
-  deletePendingUser,
-  viewPendingUsers,
-} from "../../../api/userEndPoints";
+import { deletePendingUser, viewTeacherList } from "../../../api/userEndPoints";
 
-const PendingUserList = () => {
+const TeacherList = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [selectedRows, setSelectedRows] = useState([]);
@@ -39,7 +36,8 @@ const PendingUserList = () => {
     isError,
     error,
     data: userlist,
-  } = useQuery("pendingUserList", viewPendingUsers);
+  } = useQuery("teacherList", viewTeacherList);
+  console.log(userlist);
 
   const deleteMutation = useMutation(deletePendingUser, {
     onSuccess: () => {
@@ -95,22 +93,48 @@ const PendingUserList = () => {
       flex: 1,
     },
 
+   
     {
-      field: "isApproved",
-      headerName: "Account Approval",
+      field: "department",
+      headerName: "Faculty",
       flex: 1,
     },
+
+    {
+        field: "hiredate",
+        headerName: "Date Joined",
+        flex: 1,
+      },
+
+      
+    {
+        field: "isApproved",
+        headerName: "Account Approval",
+        flex: 1,
+      },
+  
+      {
+        field: "isAdmin",
+        headerName: "Admin Access",
+        flex: 1,
+      },
+
   ];
 
   //   let rows = []
-  console.log(content[0].userID);
+  console.log(content[0]);
 
   let rows = content?.map((content, key) => ({
-    id: content.userID,
-    firstName: content.firstName,
-    lastName: content.lastName,
-    email: content.email,
-    isApproved: content.isApproved,
+    id: content.teacherID,
+    userID: content.user.userID,
+    firstName: content.user.firstName,
+    lastName: content.user.lastName,
+    email: content.user.email,
+    isApproved: content.user.isApproved,
+    isAdmin: content.user.isAdmin,
+    hiredate: content.hireDate.slice(0, 10),
+    faculty: content.faculty.facultyID,
+    department: content.faculty.department,
   }));
 
   const CustomToolbar = () => {
@@ -128,7 +152,7 @@ const PendingUserList = () => {
             onClick={() => updateUser()}
           >
             <DesignServices fontSize="small" />
-            <span className="px-2">Update User</span>
+            <span className="px-2">Update User Profle</span>
           </Button>
         )}
 
@@ -150,7 +174,7 @@ const PendingUserList = () => {
 
   return (
     <Box m="20px">
-      <AdminHeader title="Pending Users" subtitle="Manage Pending Users" />
+      <AdminHeader title="Teachers List" subtitle="Manage Teachers" />
 
       <Box
         m="40px 0 0 0"
@@ -191,7 +215,7 @@ const PendingUserList = () => {
           onSelectionModelChange={(ids) => {
             const selectedIDs = new Set(ids);
             const selectedRows = content.filter((row) =>
-              selectedIDs.has(row.userID)
+              selectedIDs.has(row.teacherID)
             );
 
             setSelectedRows(selectedRows);
@@ -205,4 +229,4 @@ const PendingUserList = () => {
   );
 };
 
-export default PendingUserList;
+export default TeacherList;

@@ -20,12 +20,10 @@ import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 
 import { toast } from "react-toastify";
-import {
-  deletePendingUser,
-  viewPendingUsers,
-} from "../../../api/userEndPoints";
+import { deleteFaculty, viewFacultyList } from "../../../api/facultyEndPoints";
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
-const PendingUserList = () => {
+const FacultyList = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [selectedRows, setSelectedRows] = useState([]);
@@ -38,14 +36,14 @@ const PendingUserList = () => {
     isLoading,
     isError,
     error,
-    data: userlist,
-  } = useQuery("pendingUserList", viewPendingUsers);
+    data: facultyList,
+  } = useQuery("facultyList", viewFacultyList);
 
-  const deleteMutation = useMutation(deletePendingUser, {
+
+  const deleteMutation = useMutation(deleteFaculty, {
     onSuccess: () => {
-      queryClient.invalidateQueries("pendingUserList");
-      toast.success("User Removed!");
-      //   navigate('/admin/outmaterial')
+      queryClient.invalidateQueries("facultyList");
+      toast.success("Entry Removed!");
     },
     onError: (error) => {
       toast.error(error.response.data.message);
@@ -59,58 +57,49 @@ const PendingUserList = () => {
   } else if (isError) {
     return <p>{error.message}</p>;
   } else {
-    content = userlist;
+    content = facultyList;
   }
 
-  const updateUser = () => {
+  const update = () => {
     console.log(selectedRows[0]);
-    navigate(`/admin/users/update`, {
+    navigate(`/admin/faculty/update`, {
       state: { ...selectedRows[0] },
     });
   };
 
-  const removeUser = () => {
+  const create = () => {
+    console.log(selectedRows[0]);
+    navigate(`/admin/faculty/update`);
+  };
+
+  const remove = () => {
     if (window.confirm("Are you sure?")) {
-      deleteMutation.mutate(selectedRows[0].userID);
+      deleteMutation.mutate(selectedRows[0].facultyID);
     }
   };
 
   const columns = [
     {
-      field: "firstName",
-      headerName: "First Name",
+      field: "id",
+      headerName: "Faculty ID",
       flex: 1,
       cellClassName: "name-column--cell",
     },
 
     {
-      field: "lastName",
-      headerName: "Last Name",
+      field: "facultyName",
+      headerName: "Faculty Name",
       flex: 1,
     },
 
-    {
-      field: "email",
-      headerName: "Email",
-      flex: 1,
-    },
-
-    {
-      field: "isApproved",
-      headerName: "Account Approval",
-      flex: 1,
-    },
   ];
 
-  //   let rows = []
-  console.log(content[0].userID);
 
-  let rows = content?.map((content, key) => ({
-    id: content.userID,
-    firstName: content.firstName,
-    lastName: content.lastName,
-    email: content.email,
-    isApproved: content.isApproved,
+
+  let rows = content?.map((content) => ({
+    id: content.facultyID,
+    facultyName: content.department,
+
   }));
 
   const CustomToolbar = () => {
@@ -121,14 +110,23 @@ const PendingUserList = () => {
         <GridToolbarDensitySelector />
         <GridToolbarExport printOptions={{ disableToolbarButton: false }} />
 
+        <Button
+            className="p-0 pe-2"
+            variant="text"
+            onClick={() => create()}
+          >
+            <AddCircleOutlineIcon fontSize="small" />
+            <span className="px-2">Create</span>
+          </Button>
+
         {selectedRows.length === 1 && (
           <Button
             className="p-0 pe-2"
             variant="text"
-            onClick={() => updateUser()}
+            onClick={() => update()}
           >
             <DesignServices fontSize="small" />
-            <span className="px-2">Update User</span>
+            <span className="px-2">Update</span>
           </Button>
         )}
 
@@ -136,11 +134,11 @@ const PendingUserList = () => {
           <Button
             className="p-0 pe-2"
             variant="text"
-            onClick={() => removeUser()}
+            onClick={() => remove()}
           >
             <DeleteOutline fontSize="small" style={{ color: "red" }} />
             <span className="px-2" style={{ color: "red" }}>
-              Remove User
+              Remove 
             </span>
           </Button>
         )}
@@ -150,7 +148,7 @@ const PendingUserList = () => {
 
   return (
     <Box m="20px">
-      <AdminHeader title="Pending Users" subtitle="Manage Pending Users" />
+      <AdminHeader title="Faculty List" subtitle="Manage Faculties" />
 
       <Box
         m="40px 0 0 0"
@@ -191,7 +189,7 @@ const PendingUserList = () => {
           onSelectionModelChange={(ids) => {
             const selectedIDs = new Set(ids);
             const selectedRows = content.filter((row) =>
-              selectedIDs.has(row.userID)
+              selectedIDs.has(row.facultyID)
             );
 
             setSelectedRows(selectedRows);
@@ -205,4 +203,4 @@ const PendingUserList = () => {
   );
 };
 
-export default PendingUserList;
+export default FacultyList;

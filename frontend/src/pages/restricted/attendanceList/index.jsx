@@ -15,20 +15,28 @@ import {
   GridToolbarDensitySelector,
 } from "@mui/x-data-grid";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import { useQuery, useMutation, useQueryClient } from "react-query";
 
 import { toast } from "react-toastify";
-import {
-  deletePendingUser,
-  viewPendingUsers,
-} from "../../../api/userEndPoints";
 
-const PendingUserList = () => {
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { deleteCourse } from "../../../api/courseEndPoints";
+import {
+  deleteLocation,
+  viewLocationList,
+} from "../../../api/locationEndPoints";
+import { deleteAttendance, getStudentAttendance } from "../../../api/attendanceEndPoints";
+
+const AttendnaceList = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [selectedRows, setSelectedRows] = useState([]);
+  const { state: studentInfo } = useLocation();
+
+  console.log(studentInfo)
+
 
   const queryClient = useQueryClient();
 
@@ -38,14 +46,13 @@ const PendingUserList = () => {
     isLoading,
     isError,
     error,
-    data: userlist,
-  } = useQuery("pendingUserList", viewPendingUsers);
+    data: courseList,
+  } = useQuery(`locationList/${studentInfo.studentID}`, getStudentAttendance);
 
-  const deleteMutation = useMutation(deletePendingUser, {
+  const deleteMutation = useMutation(deleteAttendance, {
     onSuccess: () => {
-      queryClient.invalidateQueries("pendingUserList");
-      toast.success("User Removed!");
-      //   navigate('/admin/outmaterial')
+      queryClient.invalidateQueries("facultyList");
+      toast.success("Entry Removed!");
     },
     onError: (error) => {
       toast.error(error.response.data.message);
@@ -59,58 +66,59 @@ const PendingUserList = () => {
   } else if (isError) {
     return <p>{error.message}</p>;
   } else {
-    content = userlist;
+    content = courseList;
   }
+;
 
-  const updateUser = () => {
-    console.log(selectedRows[0]);
-    navigate(`/admin/users/update`, {
-      state: { ...selectedRows[0] },
-    });
+  const create = () => {
+    navigate(`/admin/attendance/update/${studentInfo.studentID}`);
   };
 
-  const removeUser = () => {
+  const remove = () => {
     if (window.confirm("Are you sure?")) {
-      deleteMutation.mutate(selectedRows[0].userID);
+      deleteMutation.mutate([selectedRows[0].studentID, selectedRows[0].sessionID]);
     }
   };
 
   const columns = [
-    {
-      field: "firstName",
-      headerName: "First Name",
-      flex: 1,
-      cellClassName: "name-column--cell",
-    },
 
     {
-      field: "lastName",
-      headerName: "Last Name",
+      field: "sessionId",
+      headerName: "Session ID",
       flex: 1,
     },
-
     {
-      field: "email",
-      headerName: "Email",
+      field: "courseName",
+      headerName: "Course Name",
       flex: 1,
     },
-
     {
-      field: "isApproved",
-      headerName: "Account Approval",
+      field: "courseId",
+      headerName: "Course ID",
       flex: 1,
     },
+    {
+      field: "date",
+      headerName: "Date",
+      flex: 1,
+    },
+    {
+      field: "time",
+      headerName: "Time",
+      flex: 1,
+    },
+  
   ];
 
-  //   let rows = []
-  console.log(content[0].userID);
-
-  let rows = content?.map((content, key) => ({
-    id: content.userID,
-    firstName: content.firstName,
-    lastName: content.lastName,
-    email: content.email,
-    isApproved: content.isApproved,
+  let rows = content?.map((content) => ({
+    id: `${content.studentID}-${content.sessionID}`,
+    sessionId: content.sessionID,
+    courseName: content?.session?.course?.courseName,
+    courseId: content?.session?.courseID,
+    date: new Date(content?.session?.dateTime).toDateString(),
+    time: new Date(content?.session?.dateTime)
+      .toLocaleString()
+      .substring(10, 25),
   }));
 
   const CustomToolbar = () => {
@@ -121,26 +129,18 @@ const PendingUserList = () => {
         <GridToolbarDensitySelector />
         <GridToolbarExport printOptions={{ disableToolbarButton: false }} />
 
-        {selectedRows.length === 1 && (
-          <Button
-            className="p-0 pe-2"
-            variant="text"
-            onClick={() => updateUser()}
-          >
-            <DesignServices fontSize="small" />
-            <span className="px-2">Update User</span>
-          </Button>
-        )}
+        <Button className="p-0 pe-2" variant="text" onClick={() => create()}>
+          <AddCircleOutlineIcon fontSize="small" />
+          <span className="px-2">Create</span>
+        </Button>
+
+      
 
         {selectedRows.length === 1 && (
-          <Button
-            className="p-0 pe-2"
-            variant="text"
-            onClick={() => removeUser()}
-          >
+          <Button className="p-0 pe-2" variant="text" onClick={() => remove()}>
             <DeleteOutline fontSize="small" style={{ color: "red" }} />
             <span className="px-2" style={{ color: "red" }}>
-              Remove User
+              Remove
             </span>
           </Button>
         )}
@@ -148,9 +148,11 @@ const PendingUserList = () => {
     );
   };
 
+
+
   return (
     <Box m="20px">
-      <AdminHeader title="Pending Users" subtitle="Manage Pending Users" />
+      <AdminHeader title={`Attendance List of  ${studentInfo.user.firstName} ${studentInfo.user.lastName}`} subtitle="Manage Student Attendance" />
 
       <Box
         m="40px 0 0 0"
@@ -191,7 +193,7 @@ const PendingUserList = () => {
           onSelectionModelChange={(ids) => {
             const selectedIDs = new Set(ids);
             const selectedRows = content.filter((row) =>
-              selectedIDs.has(row.userID)
+              selectedIDs.has(`${row.studentID}-${row.sessionID}`)
             );
 
             setSelectedRows(selectedRows);
@@ -205,4 +207,4 @@ const PendingUserList = () => {
   );
 };
 
-export default PendingUserList;
+export default AttendnaceList;

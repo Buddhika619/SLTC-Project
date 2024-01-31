@@ -20,12 +20,15 @@ import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 
 import { toast } from "react-toastify";
-import {
-  deletePendingUser,
-  viewPendingUsers,
-} from "../../../api/userEndPoints";
+import { deletePendingUser, viewStudentList } from "../../../api/userEndPoints";
 
-const PendingUserList = () => {
+import BeenhereIcon from "@mui/icons-material/Beenhere";
+
+import AutoStoriesIcon from "@mui/icons-material/AutoStories";
+
+import EventNoteIcon from "@mui/icons-material/EventNote";
+
+const StudentList = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [selectedRows, setSelectedRows] = useState([]);
@@ -39,7 +42,8 @@ const PendingUserList = () => {
     isError,
     error,
     data: userlist,
-  } = useQuery("pendingUserList", viewPendingUsers);
+  } = useQuery("studentlist", viewStudentList);
+  console.log(userlist);
 
   const deleteMutation = useMutation(deletePendingUser, {
     onSuccess: () => {
@@ -69,11 +73,28 @@ const PendingUserList = () => {
     });
   };
 
+  const viewAttendance = () => {
+
+    navigate(`/admin/studentattendancelist`, {
+      state: { ...selectedRows[0] },
+    });
+  };
+
+  
+  const manageCourses = () => {
+
+    navigate(`/admin/studentcourselist`, {
+      state: { ...selectedRows[0] },
+    });
+  }
+
   const removeUser = () => {
     if (window.confirm("Are you sure?")) {
       deleteMutation.mutate(selectedRows[0].userID);
     }
   };
+
+
 
   const columns = [
     {
@@ -94,23 +115,48 @@ const PendingUserList = () => {
       headerName: "Email",
       flex: 1,
     },
+    {
+      field: "department",
+      headerName: "Faculty",
+      flex: 1,
+    },
+    {
+      field: "year",
+      headerName: "Academic Year",
+      flex: 1,
+    },
+
+    {
+      field: "hiredate",
+      headerName: "Date Joined",
+      flex: 1,
+    },
 
     {
       field: "isApproved",
       headerName: "Account Approval",
       flex: 1,
     },
+
+    {
+      field: "isAdmin",
+      headerName: "Admin Access",
+      flex: 1,
+    },
   ];
 
-  //   let rows = []
-  console.log(content[0].userID);
-
   let rows = content?.map((content, key) => ({
-    id: content.userID,
-    firstName: content.firstName,
-    lastName: content.lastName,
-    email: content.email,
-    isApproved: content.isApproved,
+    id: content.studentID,
+    userID: content.user.userID,
+    firstName: content.user.firstName,
+    lastName: content.user.lastName,
+    email: content.user.email,
+    isApproved: content.user.isApproved,
+    isAdmin: content.user.isAdmin,
+    hiredate: content.enrollmentDate.slice(0, 10),
+    faculty: content.faculty.facultyID,
+    department: content.faculty.department,
+    year: content.year,
   }));
 
   const CustomToolbar = () => {
@@ -128,10 +174,42 @@ const PendingUserList = () => {
             onClick={() => updateUser()}
           >
             <DesignServices fontSize="small" />
-            <span className="px-2">Update User</span>
+            <span className="px-2">Update User Profile</span>
           </Button>
         )}
 
+        {selectedRows.length === 1 && (
+          <Button
+            className="p-0 pe-2"
+            variant="text"
+            onClick={() => viewAttendance()}
+          >
+            <BeenhereIcon fontSize="small" />
+            <span className="px-2">View Attendance</span>
+          </Button>
+        )}
+
+        {selectedRows.length === 1 && (
+          <Button
+            className="p-0 pe-2"
+            variant="text"
+            onClick={() => manageCourses()}
+          >
+            <AutoStoriesIcon fontSize="small" />
+            <span className="px-2">Manage Courses</span>
+          </Button>
+        )}
+
+        {selectedRows.length === 1 && (
+          <Button
+            className="p-0 pe-2"
+            variant="text"
+            onClick={() => updateUser()}
+          >
+            <AutoStoriesIcon fontSize="small" />
+            <span className="px-2">View Sessions</span>
+          </Button>
+        )}
         {selectedRows.length === 1 && (
           <Button
             className="p-0 pe-2"
@@ -150,7 +228,7 @@ const PendingUserList = () => {
 
   return (
     <Box m="20px">
-      <AdminHeader title="Pending Users" subtitle="Manage Pending Users" />
+      <AdminHeader title="Student List" subtitle="Manage Students" />
 
       <Box
         m="40px 0 0 0"
@@ -191,7 +269,7 @@ const PendingUserList = () => {
           onSelectionModelChange={(ids) => {
             const selectedIDs = new Set(ids);
             const selectedRows = content.filter((row) =>
-              selectedIDs.has(row.userID)
+              selectedIDs.has(row.studentID)
             );
 
             setSelectedRows(selectedRows);
@@ -205,4 +283,4 @@ const PendingUserList = () => {
   );
 };
 
-export default PendingUserList;
+export default StudentList;

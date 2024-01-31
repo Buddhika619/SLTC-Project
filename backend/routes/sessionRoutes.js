@@ -16,10 +16,10 @@ router
   .post(basicAuth, adminAccess, createSessionHandler)
   .get(basicAuth, adminAccess, getAllSessionsHandler);
 
-// router
-//   .route("/:id")
-//   .get(basicAuth, adminAccess, getSessionByIdHandler)
-//   .put(basicAuth, adminAccess, updateSessionByIdHandler)
-//   .delete(basicAuth, adminAccess, deleteSessionByIdHandler);
+router
+  .route("/:id")
+  .get(basicAuth, adminAccess, getSessionByIdHandler)
+  .put(basicAuth, adminAccess, updateSessionByIdHandler)
+  .delete(basicAuth, adminAccess, deleteSessionByIdHandler);
 
 export default router;

@@ -292,6 +292,8 @@ const getUnapprovedUsers = async (req, res, next) => {
 // };
 
 const updateUser = async (req, res, next) => {
+
+  console.log(req.body)
   const t = await db.transaction(); // Assuming sequelize is your ORM instance
 
   try {
@@ -309,12 +311,12 @@ const updateUser = async (req, res, next) => {
     } = req.body;
 
     // Validate email and password
-    if (password && !CustomValidator.validateEmail(email)) {
+    if (email && !CustomValidator.validateEmail(email)) {
       res.status(400);
       throw new Error("Invalid Email");
     }
 
-    if (email && !CustomValidator.validatePassword(password)) {
+    if (password && !CustomValidator.validatePassword(password)) {
       res.status(400);
       throw new Error("Invalid password");
     }
@@ -534,11 +536,17 @@ const studentList = asyncHandler(async (req, res) => {
 // @access admin
 
 const deleteUser = asyncHandler(async (req, res) => {
-  await deleteUserById(req.params.id);
 
-  res.status(200).json({
-    msg: "user deleted successfully",
-  });
+ if(req.user.userID == req.params.id) {
+  res.status(400);
+  throw new Error("Can't delete currently logged in account");
+ }
+
+ await deleteUserById(req.params.id);
+
+ res.status(200).json({
+   msg: "user deleted successfully",
+ });
 });
 
 // @desc  delete teacher

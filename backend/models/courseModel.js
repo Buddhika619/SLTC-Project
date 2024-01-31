@@ -92,6 +92,31 @@ export const getCoursesByTeacherID = async (teacherID) => {
 
   return courses;
 };
+
+
+
+export const getCoursesByFaculty = async (FacultyID) => {
+  const courses = await Course.findAll({
+    where: {
+      FacultyID: FacultyID,
+    },
+
+    include: [
+      {
+        model: Teacher,
+        include: [
+          {
+            model: User,
+            attributes: ["firstName", "lastName"], // Include teacher's name from the User table
+          },
+        ],
+      },
+      { model: Faculty },
+    ],
+  });
+
+  return courses;
+};
 // Read course by ID
 export const getCourseById = async (id) => {
   const course = await Course.findByPk(id, {
@@ -114,6 +139,7 @@ export const getCourseById = async (id) => {
 
 // Update course by ID
 export const updateCourseById = async (id, updates) => {
+  console.log(id)
   const course = await Course.findByPk(id);
 
   if (!course) {

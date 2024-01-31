@@ -32,15 +32,16 @@ router.route("/login/:role").post(authUser);
 
 router.route("/unapproved").get(basicAuth, adminAccess, getUnapprovedUsers);
 
+
+router.route("/teachers").get(basicAuth, adminAccess, getTeachersList);
+router.route("/staff").get(basicAuth, adminAccess, getStaffListData);
+router.route("/students").get(basicAuth, adminAccess, studentList);
+
 router
   .route("/:id")
   .get(basicAuth, getSingleUser)
   .put(basicAuth, adminAccess, updateUser)
   .delete(basicAuth, adminAccess, deleteUser);
-
-// router.route("/teachers").get(basicAuth, adminAccess, getTeachersList);
-// router.route("/staff").get(basicAuth, adminAccess, getStaffListData);
-// router.route("/students").get(basicAuth, adminAccess, studentList);
 
 // router
 //   .route("/teachers/:id")

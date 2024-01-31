@@ -1,45 +1,27 @@
-import api from './api.js'
+import api from "./api.js";
 
 export const viewPendingUsers = async () => {
   return api.get(`/api/users/unapproved`);
 };
 
+export const viewTeacherList = async () => {
+  console.log("ddddd");
+  return api.get(`/api/users/teachers`);
+};
+
+export const viewStudentList = async () => {
+  return api.get(`/api/users/students`);
+};
+
+export const viewNonacList = async () => {
+  return api.get(`/api/users/staff`);
+};
+
+export const updateUserById = async (user) => {
+  console.log("user" + user.userID);
+  return api.put(`/api/users/${user.userID}`, user);
+};
 
 export const deletePendingUser = async (id) => {
   return api.delete(`/api/users/${id}`);
-};
-
-
-
-export const getallPosts = async () => {
-  return api.get(`/api/posts/filter?filter=date`);
-};
-
-export const createPost = async (post) => {
-  return api.post(`/api/posts`, post);
-};
-
-export const updatePost = async (post) => {
-  return api.put(`/api/posts/${post.id}?status=${post.status}`);
-};
-
-export const rejectFeedback = async (feedback) => {
-  if (feedback.feedback) {
-    return api.post(`/api/posts/${feedback.id}/feedback`, feedback);
-  }
-};
-
-
-
-export const getUserPosts = async () => {
-  return api.get(`/api/posts/userpost`);
-};
-
-export const getSinglePost = async (queryObj) => {
-  const id = queryObj.queryKey[1];
-  return api.get(`/api/posts/${id}`);
-};
-
-export const postComment = async (comment) => {
-  return api.post(`/api/posts/${comment.id}/comment`, comment);
 };

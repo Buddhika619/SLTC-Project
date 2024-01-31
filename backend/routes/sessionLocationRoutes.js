@@ -16,10 +16,10 @@ router
   .post(basicAuth, adminAccess, createSessionLocationHandler)
   .get(basicAuth, adminAccess, getAllSessionLocationsHandler);
 
-// router
-//   .route("/:id")
-//   .get(basicAuth, adminAccess, getSessionLocationByIdHandler)
-//   .put(basicAuth, adminAccess, updateSessionLocationByIdHandler)
-//   .delete(basicAuth, adminAccess, deleteSessionLocationByIdHandler);
+router
+  .route("/:id")
+  .get(basicAuth, adminAccess, getSessionLocationByIdHandler)
+  .put(basicAuth, adminAccess, updateSessionLocationByIdHandler)
+  .delete(basicAuth, adminAccess, deleteSessionLocationByIdHandler);
 
 export default router;

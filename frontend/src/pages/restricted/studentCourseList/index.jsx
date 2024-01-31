@@ -15,20 +15,32 @@ import {
   GridToolbarDensitySelector,
 } from "@mui/x-data-grid";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import { useQuery, useMutation, useQueryClient } from "react-query";
 
 import { toast } from "react-toastify";
-import {
-  deletePendingUser,
-  viewPendingUsers,
-} from "../../../api/userEndPoints";
 
-const PendingUserList = () => {
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { deleteCourse } from "../../../api/courseEndPoints";
+import {
+  deleteLocation,
+  viewLocationList,
+} from "../../../api/locationEndPoints";
+import {
+  deleteAttendance,
+  getStudentAttendance,
+} from "../../../api/attendanceEndPoints";
+import {
+  viewStudentCourseRelationsforSingleStudent,
+  createOrDeleteRelation,
+} from "../../../api/studentCourseRelationEndPonts";
+
+const StudentCourseList = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [selectedRows, setSelectedRows] = useState([]);
+  const { state: studentInfo } = useLocation();
 
   const queryClient = useQueryClient();
 
@@ -38,14 +50,16 @@ const PendingUserList = () => {
     isLoading,
     isError,
     error,
-    data: userlist,
-  } = useQuery("pendingUserList", viewPendingUsers);
+    data: courseList,
+  } = useQuery(
+    `studentcourses/${studentInfo.studentID}`,
+    viewStudentCourseRelationsforSingleStudent
+  );
 
-  const deleteMutation = useMutation(deletePendingUser, {
+  const mutation = useMutation(createOrDeleteRelation, {
     onSuccess: () => {
-      queryClient.invalidateQueries("pendingUserList");
-      toast.success("User Removed!");
-      //   navigate('/admin/outmaterial')
+      queryClient.invalidateQueries("facultyList");
+      toast.success("Success!");
     },
     onError: (error) => {
       toast.error(error.response.data.message);
@@ -59,58 +73,64 @@ const PendingUserList = () => {
   } else if (isError) {
     return <p>{error.message}</p>;
   } else {
-    content = userlist;
+    content = courseList;
   }
 
-  const updateUser = () => {
-    console.log(selectedRows[0]);
-    navigate(`/admin/users/update`, {
-      state: { ...selectedRows[0] },
-    });
-  };
-
-  const removeUser = () => {
+  const enroll = () => {
     if (window.confirm("Are you sure?")) {
-      deleteMutation.mutate(selectedRows[0].userID);
+      mutation.mutate({
+        studentID: studentInfo.studentID,
+        courseID: selectedRows[0].item.courseID,
+        entroll: true
+      });
     }
   };
 
+
+  const enlist = () => {
+    if (window.confirm("Are you sure?")) {
+        mutation.mutate({
+            studentID: studentInfo.studentID,
+            courseID: selectedRows[0].item.courseID,
+            enroll: true
+          });
+    }
+  };
   const columns = [
     {
-      field: "firstName",
-      headerName: "First Name",
-      flex: 1,
-      cellClassName: "name-column--cell",
-    },
-
-    {
-      field: "lastName",
-      headerName: "Last Name",
+      field: "id",
+      headerName: "Course ID",
       flex: 1,
     },
-
     {
-      field: "email",
-      headerName: "Email",
+      field: "courseName",
+      headerName: "Course Name",
       flex: 1,
     },
-
     {
-      field: "isApproved",
-      headerName: "Account Approval",
+      field: "department",
+      headerName: "Faculty",
+      flex: 1,
+    },
+    {
+      field: "year",
+      headerName: "Academic Year",
+      flex: 1,
+    },
+    {
+      field: "isFollowing",
+      headerName: "Enrollment Status",
       flex: 1,
     },
   ];
 
-  //   let rows = []
-  console.log(content[0].userID);
+  let rows = content?.map((content) => ({
+    id: content?.item?.courseID,
 
-  let rows = content?.map((content, key) => ({
-    id: content.userID,
-    firstName: content.firstName,
-    lastName: content.lastName,
-    email: content.email,
-    isApproved: content.isApproved,
+    courseName: content?.item?.courseName,
+    department: content?.item?.faculty.department,
+    year: content?.item?.year,
+    isFollowing: content?.following,
   }));
 
   const CustomToolbar = () => {
@@ -122,25 +142,25 @@ const PendingUserList = () => {
         <GridToolbarExport printOptions={{ disableToolbarButton: false }} />
 
         {selectedRows.length === 1 && (
-          <Button
-            className="p-0 pe-2"
-            variant="text"
-            onClick={() => updateUser()}
-          >
-            <DesignServices fontSize="small" />
-            <span className="px-2">Update User</span>
+          <Button className="p-0 pe-2" variant="text" onClick={() => enroll()}>
+            <AddCircleOutlineIcon
+              fontSize="small"
+              style={{ color: "skyblue" }}
+            />
+            <span className="px-2" style={{ color: "skyblue" }}>
+              Enroll Student
+            </span>
           </Button>
         )}
 
         {selectedRows.length === 1 && (
-          <Button
-            className="p-0 pe-2"
-            variant="text"
-            onClick={() => removeUser()}
-          >
-            <DeleteOutline fontSize="small" style={{ color: "red" }} />
+          <Button className="p-0 pe-2" variant="text" onClick={() => enlist()}>
+            <AddCircleOutlineIcon
+              fontSize="small"
+              style={{ color: "red" }}
+            />
             <span className="px-2" style={{ color: "red" }}>
-              Remove User
+              Enlist Student
             </span>
           </Button>
         )}
@@ -150,7 +170,10 @@ const PendingUserList = () => {
 
   return (
     <Box m="20px">
-      <AdminHeader title="Pending Users" subtitle="Manage Pending Users" />
+      <AdminHeader
+        title={`Course Info of ${studentInfo.user.firstName} ${studentInfo.user.lastName}`}
+        subtitle="Manage Student Courses"
+      />
 
       <Box
         m="40px 0 0 0"
@@ -191,7 +214,7 @@ const PendingUserList = () => {
           onSelectionModelChange={(ids) => {
             const selectedIDs = new Set(ids);
             const selectedRows = content.filter((row) =>
-              selectedIDs.has(row.userID)
+              selectedIDs.has(row.item.courseID)
             );
 
             setSelectedRows(selectedRows);
@@ -205,4 +228,4 @@ const PendingUserList = () => {
   );
 };
 
-export default PendingUserList;
+export default StudentCourseList;

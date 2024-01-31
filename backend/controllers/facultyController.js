@@ -46,6 +46,7 @@ const getFacultyByIdHandler = async (req, res, next) => {
 
 const updateFacultyByIdHandler = async (req, res, next) => {
   const { department } = req.body;
+  console.log(req.body)
   try {
     const faculty = await updateFacultyById(req.params.id, { department });
 
@@ -63,7 +64,7 @@ const getAllFacultiesHandler = async (req, res, next) => {
   try {
     const faculties = await getAllFaculties();
 
-    res.status(200).json(faculty);
+    res.status(200).json(faculties);
   } catch (error) {
     next(error);
   }
