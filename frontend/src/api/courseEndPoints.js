@@ -1,10 +1,14 @@
 import api from "./api.js";
 
-export const viewCourseList = async () => {
+export const viewCourseList =  () => {
   return api.get(`/api/course`);
 };
 
-export const createOrUpdateCourse = async (faculty) => {
+export const viewCourseListTeacher =  () => {
+  return api.get(`/api/course/teacher`);
+};
+
+export const createOrUpdateCourse =  (faculty) => {
   if (faculty.facultyID) {
     return api.put(`/api/course/${faculty.facultyID}`, faculty);
   } else {
@@ -12,6 +16,6 @@ export const createOrUpdateCourse = async (faculty) => {
   }
 };
 
-export const deleteCourse = async (id) => {
+export const deleteCourse =  (id) => {
   return api.delete(`/api/course/${id}`);
 };

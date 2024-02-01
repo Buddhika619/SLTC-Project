@@ -26,7 +26,7 @@ import BeenhereIcon from "@mui/icons-material/Beenhere";
 
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 
-import EventNoteIcon from "@mui/icons-material/EventNote";
+import EditCalendarTwoToneIcon from '@mui/icons-material/EditCalendarTwoTone';
 
 const StudentList = () => {
   const theme = useTheme();
@@ -84,6 +84,13 @@ const StudentList = () => {
   const manageCourses = () => {
 
     navigate(`/admin/studentcourselist`, {
+      state: { ...selectedRows[0] },
+    });
+  }
+
+  const viewSessions = () => {
+
+    navigate(`/admin/studentsessionlist`, {
       state: { ...selectedRows[0] },
     });
   }
@@ -204,9 +211,9 @@ const StudentList = () => {
           <Button
             className="p-0 pe-2"
             variant="text"
-            onClick={() => updateUser()}
+            onClick={() => viewSessions()}
           >
-            <AutoStoriesIcon fontSize="small" />
+            <EditCalendarTwoToneIcon fontSize="small" />
             <span className="px-2">View Sessions</span>
           </Button>
         )}

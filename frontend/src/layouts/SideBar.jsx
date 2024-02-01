@@ -87,9 +87,7 @@ const SideBar = ({navigationItems}) => {
                 ml="15px"
               >
                 <Typography variant="h3" color={colors.grey[100]}>
-                  {userInfo.userData.user.firstName +
-                    " " +
-                    userInfo.userData.user.lastName}
+                  SLTC
                 </Typography>
                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                   <MenuOutlinedIcon />

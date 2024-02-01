@@ -12,9 +12,12 @@ export const createOrUpdateAttendance = async (attendance) => {
   }
 };
 
-export const getStudentAttendance = async ({queryKey}) => {
+export const markAttendanceWithQR = async ({ queryKey }) => {
+  return api.get(`/api/attendance/qr/${queryKey[1]}/${queryKey[2]}`);
+};
 
-  return api.get(`/api/attendance/student/${queryKey[0].split('/')[1]}`);
+export const getStudentAttendance = async ({ queryKey }) => {
+  return api.get(`/api/attendance/student/${queryKey[0].split("/")[1]}`);
 };
 
 export const getAttendanceById = async (id) => {
@@ -26,7 +29,5 @@ export const updateAttendance = async (id) => {
 };
 
 export const deleteAttendance = async (id) => {
-
   return api.delete(`/api/attendance/${id[0]}/${id[1]}`);
 };
-

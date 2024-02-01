@@ -1,10 +1,10 @@
 import api from "./api.js";
 
-export const viewFacultyList = async () => {
+export const viewFacultyList =  () => {
   return api.get(`/api/faculty`);
 };
 
-export const createOrUpdate = async (faculty) => {
+export const createOrUpdate =  (faculty) => {
     console.log('faculty')
     if(faculty.facultyID) {
         return api.put(`/api/faculty/${faculty.facultyID}`, faculty);
@@ -15,15 +15,15 @@ export const createOrUpdate = async (faculty) => {
 //  
 };
 
-export const getFacultyById = async (id) => {
+export const getFacultyById =  (id) => {
   return api.get(`/api/faculty/${id}`);
 };
 
-export const updateFaculty = async (id) => {
+export const updateFaculty =  (id) => {
     return api.put(`/api/faculty/${id}`);
   };
 
   
-export const deleteFaculty = async (id) => {
+export const deleteFaculty =  (id) => {
     return api.delete(`/api/faculty/${id}`);
   };

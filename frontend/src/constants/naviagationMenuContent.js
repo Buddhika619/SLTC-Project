@@ -10,6 +10,8 @@ import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import JoinFullIcon from '@mui/icons-material/JoinFull';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
 import EditCalendarTwoToneIcon from '@mui/icons-material/EditCalendarTwoTone';
+import MoveToInboxIcon from '@mui/icons-material/MoveToInbox';
+import BeenhereIcon from '@mui/icons-material/Beenhere';
 
 export const navigationItems = [
   {
@@ -75,4 +77,52 @@ export const navigationItems = [
 
   
 
+];
+
+export const teacherNavigation = [
+  {
+    title: "Dashboard",
+    to: "/teacher/",
+    icon: <HomeOutlinedIcon />,
+  },
+
+  // {
+  //   title: "Upcoming Sessions List",
+  //   to: "/teacher/sessions",
+  //   icon: <MoveToInboxIcon />,
+  // },
+
+
+  {
+    title: "My Sessions",
+    to: "/teacher/sessionsall",
+    icon: <EditCalendarTwoToneIcon />,
+  },
+
+  {
+    title: "My Courses",
+    to: "/teacher/courses",
+    icon: <AutoStoriesIcon />,
+  },
+];
+
+export const StudentNavigation = [
+  {
+    title: "Dashboard",
+    to: "/student/",
+    icon: <HomeOutlinedIcon />,
+  },
+
+
+  {
+    title: "My Attendance",
+    to: "/student/attendance",
+    icon: <BeenhereIcon />,
+  },
+
+  {
+    title: "My Courses",
+    to: "/student/courses",
+    icon: <AutoStoriesIcon />,
+  },
 ];

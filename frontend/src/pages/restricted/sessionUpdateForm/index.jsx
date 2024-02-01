@@ -32,21 +32,22 @@ const SessionUpdateForm = () => {
   const headerTextRef = useRef("");
   const headerSubRef = useRef("");
 
-  let originalDate = new Date(sessionInfo.dateTime);
 
-  // Adding 5.5 hours to the date
-  originalDate.setHours(
-    originalDate.getHours() + 5,
-    originalDate.getMinutes() + 30
-  );
-
-  // Getting the ISO string with the adjusted time
-  let adjustedISOString = originalDate.toISOString().slice(0, 16);
 
   useMemo(() => {
     if (sessionInfo) {
       headerTextRef.current = "Update Session";
       headerSubRef.current = "Manage Session";
+      let originalDate = new Date(sessionInfo.dateTime);
+
+      // Adding 5.5 hours to the date
+      originalDate.setHours(
+        originalDate.getHours() + 5,
+        originalDate.getMinutes() + 30
+      );
+    
+      // Getting the ISO string with the adjusted time
+      let adjustedISOString = originalDate.toISOString().slice(0, 16);
 
       setFormicState({
         courseID: sessionInfo.courseID,
@@ -66,7 +67,7 @@ const SessionUpdateForm = () => {
         locationID: "",
       });
     }
-  }, [sessionInfo,adjustedISOString]);
+  }, [sessionInfo]);
 
   const formMutation = useMutation(createOrUpdateSession, {
     onMutate: () => {

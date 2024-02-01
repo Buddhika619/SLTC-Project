@@ -15,32 +15,19 @@ import {
   GridToolbarDensitySelector,
 } from "@mui/x-data-grid";
 
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { useQuery, useMutation, useQueryClient } from "react-query";
 
 import { toast } from "react-toastify";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { deleteCourse } from "../../../api/courseEndPoints";
-import {
-  deleteLocation,
-  viewLocationList,
-} from "../../../api/locationEndPoints";
-import {
-  deleteAttendance,
-  getStudentAttendance,
-} from "../../../api/attendanceEndPoints";
-import {
-  viewStudentCourseRelationsforSingleStudent,
-  createOrDeleteRelation,
-} from "../../../api/studentCourseRelationEndPonts";
+import { deleteCourse, viewCourseList, viewCourseListTeacher } from "../../../api/courseEndPoints";
 
-const StudentCourseList = () => {
+const TeacherCourseList = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [selectedRows, setSelectedRows] = useState([]);
-  const { state: studentInfo } = useLocation();
 
   const queryClient = useQueryClient();
 
@@ -51,15 +38,12 @@ const StudentCourseList = () => {
     isError,
     error,
     data: courseList,
-  } = useQuery(
-    `studentcourses/${studentInfo.studentID}`,
-    viewStudentCourseRelationsforSingleStudent
-  );
+  } = useQuery("courseList", viewCourseListTeacher);
 
-  const mutation = useMutation(createOrDeleteRelation, {
+  const deleteMutation = useMutation(deleteCourse, {
     onSuccess: () => {
       queryClient.invalidateQueries("facultyList");
-      toast.success("Success!");
+      toast.success("Entry Removed!");
     },
     onError: (error) => {
       toast.error(error.response.data.message);
@@ -76,60 +60,54 @@ const StudentCourseList = () => {
     content = courseList;
   }
 
-  const enroll = () => {
-    if (window.confirm("Are you sure?")) {
-      mutation.mutate({
-        studentID: studentInfo.studentID,
-        courseID: selectedRows[0].item.courseID,
-        entroll: true,
-      });
-    }
-  };
-
-  const enlist = () => {
-    if (window.confirm("Are you sure?")) {
-      mutation.mutate({
-        studentID: studentInfo.studentID,
-        courseID: selectedRows[0].item.courseID,
-        enroll: true,
-      });
-    }
-  };
   const columns = [
     {
       field: "id",
       headerName: "Course ID",
       flex: 1,
+      cellClassName: "name-column--cell",
     },
+
     {
       field: "courseName",
       headerName: "Course Name",
       flex: 1,
     },
     {
-      field: "department",
-      headerName: "Faculty",
-      flex: 1,
-    },
+        field: "courseYear",
+        headerName: "Acedemic Year",
+        flex: 1,
+      },
+
+
     {
-      field: "year",
-      headerName: "Academic Year",
-      flex: 1,
-    },
+        field: "facultyName",
+        headerName: "Faculty Name",
+        flex: 1,
+      },
+
     {
-      field: "isFollowing",
-      headerName: "Enrollment Status",
+      field: "techerFirstName",
+      headerName: "Teacher First Name",
       flex: 1,
     },
+
+    {
+      field: "teacherLastName",
+      headerName: "Teacher Last Name",
+      flex: 1,
+    },
+
+    
   ];
 
   let rows = content?.map((content) => ({
-    id: content?.item?.courseID,
-
-    courseName: content?.item?.courseName,
-    department: content?.item?.faculty.department,
-    year: content?.item?.year,
-    isFollowing: content?.following,
+    id: content.courseID,
+    courseName: content.courseName,
+    facultyName: content.faculty?.department,
+    courseYear: content.year,
+    techerFirstName: content.teacher?.user.firstName,
+    teacherLastName: content.teacher?.user.lastName,
   }));
 
   const CustomToolbar = () => {
@@ -140,36 +118,13 @@ const StudentCourseList = () => {
         <GridToolbarDensitySelector />
         <GridToolbarExport printOptions={{ disableToolbarButton: false }} />
 
-        {selectedRows.length === 1 && selectedRows[0]?.following === false && (
-          <Button className="p-0 pe-2" variant="text" onClick={() => enroll()}>
-            <AddCircleOutlineIcon
-              fontSize="small"
-              style={{ color: "skyblue" }}
-            />
-            <span className="px-2" style={{ color: "skyblue" }}>
-              Enroll Student
-            </span>
-          </Button>
-        )}
-
-        {selectedRows.length === 1 && selectedRows[0]?.following === true && (
-          <Button className="p-0 pe-2" variant="text" onClick={() => enlist()}>
-            <AddCircleOutlineIcon fontSize="small" style={{ color: "red" }} />
-            <span className="px-2" style={{ color: "red" }}>
-              Enlist Student
-            </span>
-          </Button>
-        )}
       </GridToolbarContainer>
     );
   };
 
   return (
     <Box m="20px">
-      <AdminHeader
-        title={`Course Info of ${studentInfo.user.firstName} ${studentInfo.user.lastName}`}
-        subtitle="Manage Student Courses"
-      />
+      <AdminHeader title="Course List" subtitle="Manage Courses" />
 
       <Box
         m="40px 0 0 0"
@@ -210,7 +165,7 @@ const StudentCourseList = () => {
           onSelectionModelChange={(ids) => {
             const selectedIDs = new Set(ids);
             const selectedRows = content.filter((row) =>
-              selectedIDs.has(row.item.courseID)
+              selectedIDs.has(row.courseID)
             );
 
             setSelectedRows(selectedRows);
@@ -224,4 +179,4 @@ const StudentCourseList = () => {
   );
 };
 
-export default StudentCourseList;
+export default TeacherCourseList;

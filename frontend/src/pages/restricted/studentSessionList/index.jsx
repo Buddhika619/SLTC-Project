@@ -2,11 +2,8 @@ import { Box, Button, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../../theme";
 
-import DeleteOutline from "@mui/icons-material/DeleteOutline";
-import DesignServices from "@mui/icons-material/DesignServices";
-
 import AdminHeader from "../../../components/AdminHeader";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   GridToolbarContainer,
   GridToolbarColumnsButton,
@@ -15,7 +12,7 @@ import {
   GridToolbarDensitySelector,
 } from "@mui/x-data-grid";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import { useQuery, useMutation, useQueryClient } from "react-query";
 
@@ -23,32 +20,19 @@ import { toast } from "react-toastify";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
-import { deleteLocation, viewLocationList } from "../../../api/locationEndPoints";
-import { deleteSession, viewSessionList } from "../../../api/sessionEndPoints";
+import {
+  viewStudentCourseRelationsforSingleStudent,
+  createOrDeleteRelation,
+} from "../../../api/studentCourseRelationEndPonts";
+import { viewStudentSessions } from "../../../api/sessionEndPoints";
 
-import Qrmodel from "../../../components/Qrmodel";
-import QRCode from "qrcode";
-
-import QrCodeScannerIcon from "@mui/icons-material/QrCodeScanner";
-
-const SessionList = () => {
+const StudentSessionsList = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [selectedRows, setSelectedRows] = useState([]);
+  const { state: studentInfo } = useLocation();
 
   const queryClient = useQueryClient();
-
-  const [open, setOpen] = useState(false);
-
-  const qr = useRef("");
-
-  const generateQR = async (text) => {
-    try {
-      qr.current = await QRCode.toDataURL(text);
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   const navigate = useNavigate();
 
@@ -56,13 +40,13 @@ const SessionList = () => {
     isLoading,
     isError,
     error,
-    data: sessionlist,
-  } = useQuery("sessionList", viewSessionList);
+    data: courseList,
+  } = useQuery(`studentsessions/${studentInfo.studentID}`, viewStudentSessions);
 
-  const deleteMutation = useMutation(deleteSession, {
+  const mutation = useMutation(createOrDeleteRelation, {
     onSuccess: () => {
       queryClient.invalidateQueries("facultyList");
-      toast.success("Entry Removed!");
+      toast.success("Success!");
     },
     onError: (error) => {
       toast.error(error.response.data.message);
@@ -76,34 +60,8 @@ const SessionList = () => {
   } else if (isError) {
     return <p>{error.message}</p>;
   } else {
-    content = sessionlist;
+    content = courseList;
   }
-
-
-
-  const create = () => {
-    navigate(`/admin/session/update`);
-  };
-
-  const remove = () => {
-    if (window.confirm("Are you sure?")) {
-      deleteMutation.mutate(selectedRows[0].sessionID);
-    }
-  };
-
-  const qrHandler = () => {
-    console.log(window.location.href.split("/")[2])
-    generateQR(
-      `http://${window.location.href.split("/")[2]}/student/attandance/${
-        selectedRows[0].sessionID
-      }`
-    );
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
 
   const columns = [
     {
@@ -133,7 +91,7 @@ const SessionList = () => {
     {
       field: "courseName",
       headerName: "Course Name",
-      width: 250
+      flex:1
      
     },
     {
@@ -142,41 +100,79 @@ const SessionList = () => {
       width: 100
       
     },
-    {
-      field: "teacherFirstName",
-      headerName: "Teacher First Name",
-      width: 120
-   
-    },
-    {
-      field: "teacherSecondName",
-      headerName: "Teacher Second Name",
-      width: 120
     
-    },
+
     {
       field: "email",
       headerName: "Teacher Email",
       width: 200
      
     },
-    {
-      field: "location",
-      headerName: "Location Name",
-      width: 100
-    },
+    
     {
       field: "faculty",
       headerName: "Faculty",
       width: 150
     },
+
+    {
+        field: "location",
+        headerName: "Location Name",
+        width: 100
+      },
   ];
   
 
 
 
+//   {
+// 	"0": {
+// 		"sessionID": "3629c16e-102e-4f23-90f5-b213dedd7a1a",
+// 		"courseID": "ef16fb94-5c18-46dd-88aa-2d029103ee4f",
+// 		"dateTime": "2024-04-14T16:00:00.000Z",
+// 		"minutes": 90,
+// 		"locationID": "8e0cfa6a-87a0-44a7-9e21-b7fa1adcacbc",
+// 		"createdAt": "2024-01-31T14:24:12.000Z",
+// 		"updatedAt": "2024-01-31T14:24:12.000Z",
+// 		"course": {
+// 			"courseID": "ef16fb94-5c18-46dd-88aa-2d029103ee4f",
+// 			"courseName": "Introduction to cyber securityxxxaD",
+// 			"teacherID": "f819b51c-c95a-4323-a500-7ff5e48bc19a",
+// 			"facultyID": "7b22a206-c90e-4a4b-b60b-f8538fb78b91",
+// 			"year": 3,
+// 			"createdAt": "2024-01-29T14:36:05.000Z",
+// 			"updatedAt": "2024-01-31T09:32:07.000Z",
+// 			"teacher": {
+// 				"teacherID": "f819b51c-c95a-4323-a500-7ff5e48bc19a",
+// 				"hireDate": "2024-01-28T17:25:21.000Z",
+// 				"facultyID": "7b22a206-c90e-4a4b-b60b-f8538fb78b91",
+// 				"createdAt": "2024-01-28T17:25:21.000Z",
+// 				"updatedAt": "2024-01-31T06:23:06.000Z",
+// 				"userID": "632a0aca-3188-4f91-873c-e5ce20464ec2",
+// 				"user": {
+// 					"userID": "632a0aca-3188-4f91-873c-e5ce20464ec2",
+// 					"firstName": "TONE",
+// 					"lastName": "Doe",
+// 					"isAdmin": false,
+// 					"email": "john.teacher@example.com",
+// 					"isApproved": true,
+// 					"password": "$2a$10$9QSC20TEEZl.Ziq5h8Ex9ul.jj29JWcWBGuXYA6yPIuZ9esZ9vi2q",
+// 					"createdAt": "2024-01-28T17:24:37.000Z",
+// 					"updatedAt": "2024-01-31T06:23:06.000Z"
+// 				}
+// 			}
+// 		},
+// 		"session_location": {
+// 			"locationID": "8e0cfa6a-87a0-44a7-9e21-b7fa1adcacbc",
+// 			"name": "dfdf",
+// 			"facultyID": "7b22a206-c90e-4a4b-b60b-f8538fb78b91",
+// 			"createdAt": "2024-01-31T11:45:00.000Z",
+// 			"updatedAt": "2024-01-31T11:45:00.000Z"
+// 		}
+// 	}
+// }
 
-  let rows = content?.map((content) => ({
+let rows = content?.map((content) => ({
     id: content?.sessionID,
     minutes: content.minutes,
     date: new Date(content?.dateTime).toDateString(),
@@ -184,8 +180,7 @@ const SessionList = () => {
 
     courseName: content.course?.courseName,
     year: content.course?.year,
-    teacherFirstName: content.course?.teacher?.user?.firstName,
-    teacherSecondName: content.course?.teacher?.user?.lastName,
+ 
     email: content.course?.teacher?.user?.email,
     location: content?.session_location?.name,
     faculty: content?.session_location?.faculty.department
@@ -199,38 +194,16 @@ const SessionList = () => {
         <GridToolbarFilterButton />
         <GridToolbarDensitySelector />
         <GridToolbarExport printOptions={{ disableToolbarButton: false }} />
-
-        <Button className="p-0 pe-2" variant="text" onClick={() => create()}>
-          <AddCircleOutlineIcon fontSize="small" />
-          <span className="px-2">Create</span>
-        </Button>
-
-        {selectedRows.length === 1 && (
-          <Button
-            className="p-0 pe-2"
-            variant="text"
-            onClick={() => qrHandler()}
-          >
-            <QrCodeScannerIcon fontSize="small" />
-            <span className="px-2">Generate Session QR</span>
-          </Button>
-        )}
-
-        {selectedRows.length === 1 && (
-          <Button className="p-0 pe-2" variant="text" onClick={() => remove()}>
-            <DeleteOutline fontSize="small" style={{ color: "red" }} />
-            <span className="px-2" style={{ color: "red" }}>
-              Remove
-            </span>
-          </Button>
-        )}
       </GridToolbarContainer>
     );
   };
 
   return (
     <Box m="20px">
-      <AdminHeader title="Session List" subtitle="Manage Sessions" />
+      <AdminHeader
+        title={`Session Info of ${studentInfo.user.firstName} ${studentInfo.user.lastName}`}
+        subtitle="Manage Student Sessions"
+      />
 
       <Box
         m="40px 0 0 0"
@@ -271,7 +244,7 @@ const SessionList = () => {
           onSelectionModelChange={(ids) => {
             const selectedIDs = new Set(ids);
             const selectedRows = content.filter((row) =>
-              selectedIDs.has(row.sessionID)
+              selectedIDs.has(row.item.courseID)
             );
 
             setSelectedRows(selectedRows);
@@ -281,14 +254,8 @@ const SessionList = () => {
           }}
         />
       </Box>
-      <Qrmodel
-        onClick={qrHandler}
-        qr={qr.current}
-        open={open}
-        handleClose={handleClose}
-      />
     </Box>
   );
 };
 
-export default SessionList;
+export default StudentSessionsList;

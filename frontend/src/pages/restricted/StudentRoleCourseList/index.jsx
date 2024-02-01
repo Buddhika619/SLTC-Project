@@ -1,9 +1,6 @@
-import { Box, Button, useTheme } from "@mui/material";
+import { Box, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../../theme";
-
-import DeleteOutline from "@mui/icons-material/DeleteOutline";
-import DesignServices from "@mui/icons-material/DesignServices";
 
 import AdminHeader from "../../../components/AdminHeader";
 import { useState } from "react";
@@ -15,36 +12,18 @@ import {
   GridToolbarDensitySelector,
 } from "@mui/x-data-grid";
 
-import { useNavigate, useLocation } from "react-router-dom";
+import { useQuery } from "react-query";
 
-import { useQuery, useMutation, useQueryClient } from "react-query";
+import { viewStudentCourseRelationsforSingleStudent } from "../../../api/studentCourseRelationEndPonts";
+import { useSelector } from "react-redux";
 
-import { toast } from "react-toastify";
-
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { deleteCourse } from "../../../api/courseEndPoints";
-import {
-  deleteLocation,
-  viewLocationList,
-} from "../../../api/locationEndPoints";
-import {
-  deleteAttendance,
-  getStudentAttendance,
-} from "../../../api/attendanceEndPoints";
-import {
-  viewStudentCourseRelationsforSingleStudent,
-  createOrDeleteRelation,
-} from "../../../api/studentCourseRelationEndPonts";
-
-const StudentCourseList = () => {
+const StudentCourseRoleList = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [selectedRows, setSelectedRows] = useState([]);
-  const { state: studentInfo } = useLocation();
 
-  const queryClient = useQueryClient();
-
-  const navigate = useNavigate();
+  const auth = useSelector((state) => state.auth);
+  const { userInfo } = auth;
 
   const {
     isLoading,
@@ -52,20 +31,9 @@ const StudentCourseList = () => {
     error,
     data: courseList,
   } = useQuery(
-    `studentcourses/${studentInfo.studentID}`,
+    `studentcourses/${userInfo.userData.studentID}`,
     viewStudentCourseRelationsforSingleStudent
   );
-
-  const mutation = useMutation(createOrDeleteRelation, {
-    onSuccess: () => {
-      queryClient.invalidateQueries("facultyList");
-      toast.success("Success!");
-    },
-    onError: (error) => {
-      toast.error(error.response.data.message);
-      console.log(error);
-    },
-  });
 
   let content;
   if (isLoading) {
@@ -76,25 +44,6 @@ const StudentCourseList = () => {
     content = courseList;
   }
 
-  const enroll = () => {
-    if (window.confirm("Are you sure?")) {
-      mutation.mutate({
-        studentID: studentInfo.studentID,
-        courseID: selectedRows[0].item.courseID,
-        entroll: true,
-      });
-    }
-  };
-
-  const enlist = () => {
-    if (window.confirm("Are you sure?")) {
-      mutation.mutate({
-        studentID: studentInfo.studentID,
-        courseID: selectedRows[0].item.courseID,
-        enroll: true,
-      });
-    }
-  };
   const columns = [
     {
       field: "id",
@@ -139,37 +88,13 @@ const StudentCourseList = () => {
         <GridToolbarFilterButton />
         <GridToolbarDensitySelector />
         <GridToolbarExport printOptions={{ disableToolbarButton: false }} />
-
-        {selectedRows.length === 1 && selectedRows[0]?.following === false && (
-          <Button className="p-0 pe-2" variant="text" onClick={() => enroll()}>
-            <AddCircleOutlineIcon
-              fontSize="small"
-              style={{ color: "skyblue" }}
-            />
-            <span className="px-2" style={{ color: "skyblue" }}>
-              Enroll Student
-            </span>
-          </Button>
-        )}
-
-        {selectedRows.length === 1 && selectedRows[0]?.following === true && (
-          <Button className="p-0 pe-2" variant="text" onClick={() => enlist()}>
-            <AddCircleOutlineIcon fontSize="small" style={{ color: "red" }} />
-            <span className="px-2" style={{ color: "red" }}>
-              Enlist Student
-            </span>
-          </Button>
-        )}
       </GridToolbarContainer>
     );
   };
 
   return (
     <Box m="20px">
-      <AdminHeader
-        title={`Course Info of ${studentInfo.user.firstName} ${studentInfo.user.lastName}`}
-        subtitle="Manage Student Courses"
-      />
+      <AdminHeader title={`My Course Info`} subtitle="Manage Student Courses" />
 
       <Box
         m="40px 0 0 0"
@@ -224,4 +149,4 @@ const StudentCourseList = () => {
   );
 };
 
-export default StudentCourseList;
+export default StudentCourseRoleList;

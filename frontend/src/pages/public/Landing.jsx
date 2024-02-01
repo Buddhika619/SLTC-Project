@@ -11,19 +11,19 @@ import { Link } from "react-router-dom";
 
 const cardData = [
   {
-    title: "Admin Login",
+    title: "Continue as An Admin",
     image:
       "https://img.freepik.com/free-vector/admin-concept-illustration_114360-2248.jpg",
     url: "/login/admin",
   },
   {
-    title: "Teacher Login",
+    title: "Continue as a Teacher",
     image:
       "https://img.freepik.com/free-vector/teacher-concept-illustration_114360-1638.jpg",
     url: "/login/teacher",
   },
   {
-    title: "Student Login",
+    title: "Continue as a Student",
     image:
       "https://img.freepik.com/free-vector/grades-concept-illustration_114360-5958.jpg",
     url: "/login/student",

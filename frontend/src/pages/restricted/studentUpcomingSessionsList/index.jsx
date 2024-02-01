@@ -6,7 +6,7 @@ import DeleteOutline from "@mui/icons-material/DeleteOutline";
 import DesignServices from "@mui/icons-material/DesignServices";
 
 import AdminHeader from "../../../components/AdminHeader";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   GridToolbarContainer,
   GridToolbarColumnsButton,
@@ -24,51 +24,22 @@ import { toast } from "react-toastify";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 import { deleteLocation, viewLocationList } from "../../../api/locationEndPoints";
-import { deleteSession, viewSessionList } from "../../../api/sessionEndPoints";
+import { deleteSession, viewSessionList, viewUpcomingSessionListStudent, viewUpcomingSessionListTeacher } from "../../../api/sessionEndPoints";
 
-import Qrmodel from "../../../components/Qrmodel";
-import QRCode from "qrcode";
-
-import QrCodeScannerIcon from "@mui/icons-material/QrCodeScanner";
-
-const SessionList = () => {
+const StudentUpcomingSessionList = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [selectedRows, setSelectedRows] = useState([]);
 
-  const queryClient = useQueryClient();
-
-  const [open, setOpen] = useState(false);
-
-  const qr = useRef("");
-
-  const generateQR = async (text) => {
-    try {
-      qr.current = await QRCode.toDataURL(text);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const navigate = useNavigate();
 
   const {
     isLoading,
     isError,
     error,
     data: sessionlist,
-  } = useQuery("sessionList", viewSessionList);
+  } = useQuery("sessionListTeacher", viewUpcomingSessionListStudent);
 
-  const deleteMutation = useMutation(deleteSession, {
-    onSuccess: () => {
-      queryClient.invalidateQueries("facultyList");
-      toast.success("Entry Removed!");
-    },
-    onError: (error) => {
-      toast.error(error.response.data.message);
-      console.log(error);
-    },
-  });
+
 
   let content;
   if (isLoading) {
@@ -80,30 +51,6 @@ const SessionList = () => {
   }
 
 
-
-  const create = () => {
-    navigate(`/admin/session/update`);
-  };
-
-  const remove = () => {
-    if (window.confirm("Are you sure?")) {
-      deleteMutation.mutate(selectedRows[0].sessionID);
-    }
-  };
-
-  const qrHandler = () => {
-    console.log(window.location.href.split("/")[2])
-    generateQR(
-      `http://${window.location.href.split("/")[2]}/student/attandance/${
-        selectedRows[0].sessionID
-      }`
-    );
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
 
   const columns = [
     {
@@ -179,7 +126,8 @@ const SessionList = () => {
   let rows = content?.map((content) => ({
     id: content?.sessionID,
     minutes: content.minutes,
-    date: new Date(content?.dateTime).toDateString(),
+    date:  content?.dateTime ? new Intl.DateTimeFormat('en-US', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(content.dateTime)) : '',
+
     time: new Date(content?.dateTime).toLocaleString().substring(10, 25),
 
     courseName: content.course?.courseName,
@@ -200,37 +148,13 @@ const SessionList = () => {
         <GridToolbarDensitySelector />
         <GridToolbarExport printOptions={{ disableToolbarButton: false }} />
 
-        <Button className="p-0 pe-2" variant="text" onClick={() => create()}>
-          <AddCircleOutlineIcon fontSize="small" />
-          <span className="px-2">Create</span>
-        </Button>
-
-        {selectedRows.length === 1 && (
-          <Button
-            className="p-0 pe-2"
-            variant="text"
-            onClick={() => qrHandler()}
-          >
-            <QrCodeScannerIcon fontSize="small" />
-            <span className="px-2">Generate Session QR</span>
-          </Button>
-        )}
-
-        {selectedRows.length === 1 && (
-          <Button className="p-0 pe-2" variant="text" onClick={() => remove()}>
-            <DeleteOutline fontSize="small" style={{ color: "red" }} />
-            <span className="px-2" style={{ color: "red" }}>
-              Remove
-            </span>
-          </Button>
-        )}
       </GridToolbarContainer>
     );
   };
 
   return (
     <Box m="20px">
-      <AdminHeader title="Session List" subtitle="Manage Sessions" />
+      <AdminHeader title="Upcoming Session List" subtitle="Manage Sessions" />
 
       <Box
         m="40px 0 0 0"
@@ -281,14 +205,8 @@ const SessionList = () => {
           }}
         />
       </Box>
-      <Qrmodel
-        onClick={qrHandler}
-        qr={qr.current}
-        open={open}
-        handleClose={handleClose}
-      />
     </Box>
   );
 };
 
-export default SessionList;
+export default StudentUpcomingSessionList;

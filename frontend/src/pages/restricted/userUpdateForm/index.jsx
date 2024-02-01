@@ -127,7 +127,7 @@ const UserUpdateForm = () => {
       if (variable.role === "TEACHER") {
         navigate("/admin/teacherlist");
       } else if (variable.role === "STUDENT") {
-        navigate("/admin/studnetlist");
+        navigate("/admin/studentlist");
       } else {
         navigate("/admin/nonaclist");
       }
