@@ -38,6 +38,14 @@ export const getAllFaculties = async () => {
   return faculties;
 };
 
+
+export const getAllFacultiesCount = async () => {
+  const count = await Faculty.count();
+
+  return count;
+};
+
+
 export const getFacultyById = async (id) => {
   const faculty = await Faculty.findByPk(id, {
     attributes: ["facultyID", "department"],

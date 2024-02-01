@@ -1,4 +1,4 @@
-import { DataTypes, Op } from "sequelize";
+import { DataTypes, Op,literal } from "sequelize";
 import db from "../config/db.js";
 import Course from "./courseModel.js";
 import SessionLocation from "./sessionLocationModel.js";
@@ -119,6 +119,7 @@ export const getAllSessions = async () => {
         ],
       },
     ],
+    order: [['dateTime', 'DESC']], 
   });
 
   return sessions;
@@ -151,6 +152,84 @@ export const getSessionById = async (id) => {
   return session;
 };
 
+
+export const getAllActiveSessions = async () => {
+  const currentTime = new Date();
+  const utctime = new Date(currentTime.toUTCString());
+  console.log(utctime)
+  const session = await Session.findAll( {
+    where: {
+        dateTime: {
+          [Op.gt]: literal('CURRENT_TIMESTAMP'), // Adjust this based on your database
+        },
+    },
+    include: [
+      {
+        model: Course,
+        include: [
+          {
+            model: Teacher,
+            include: [
+              {
+                model: User,
+                exclude: ["password"],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        model: SessionLocation,
+        include: [
+         { model: Faculty}
+        ]
+      },
+    ],
+    order: [['dateTime', 'ASC']], 
+  });
+
+  return session;
+};
+
+
+export const getSessionByCourseID = async (id) => {
+  const currentTime = new Date();
+  const utctime = new Date(currentTime.toUTCString());
+  console.log(id)
+  const session = await Session.findAll( {
+    where: {
+      courseID: id,
+        dateTime: {
+          [Op.gt]: literal('CURRENT_TIMESTAMP'), // Adjust this based on your database
+        },
+    },
+    include: [
+      {
+        model: Course,
+        include: [
+          {
+            model: Teacher,
+            include: [
+              {
+                model: User,
+                exclude: ["password"],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        model: SessionLocation,
+        include: [
+         { model: Faculty}
+        ]
+      },
+    ],
+    order: [['dateTime', 'ASC']], 
+  });
+
+  return session;
+};
 // Update session by ID
 export const updateSessionById = async (id, updates) => {
   const session = await Session.findByPk(id);

@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
-import Student from "../models/studentModel.js";
-import Teacher from "../models/teacherModel.js";
+import Student, { getStudentByUserId } from "../models/studentModel.js";
+import Teacher, { getTeacherByUserId } from "../models/teacherModel.js";
 
 const basicAuth = asyncHandler(async (req, res, next) => {
   let token;
@@ -24,7 +24,7 @@ const basicAuth = asyncHandler(async (req, res, next) => {
     } catch (error) {
       console.error(error);
       res.status(401);
-      throw new Error("Not Authorized, token failed");
+      next(error);
     }
   }
 
@@ -36,45 +36,52 @@ const basicAuth = asyncHandler(async (req, res, next) => {
 
 const studentAccess = async (req, res, next) => {
   try {
-    const data = await Student.getStudentByUserId(req.userID);
+    const data = await getStudentByUserId(req.user.userID);
 
     if (data || req.user.isAdmin) {
+      if (data) {
+        req.user.studentID = data.studentID;
+      }
+
       next();
     } else {
       res.status(401);
       throw new Error("Not Authorized as a student");
     }
-  } catch {
-    console.error(error);
+  } catch (e) {
+    console.error(e);
     res.status(401);
-    throw new Error("Not Authorized");
+    next(e);
   }
 };
 
 const teacherAccess = async (req, res, next) => {
   try {
-    const data = await Teacher.getTeacherByUserId(req.userID);
+    const data = await getTeacherByUserId(req.user.userID);
 
     if (data || req.user.isAdmin) {
+      if (data) {
+        req.user.teacherID = data.teacherID;
+      }
+
       next();
     } else {
       res.status(401);
       throw new Error("Not Authorized as a Teacher");
     }
-  } catch {
-    console.error(error);
+  } catch (error) {
+    console.log(error);
     res.status(401);
-    throw new Error("Not Authorized");
+    next(error);
   }
 };
-
 
 const adminAccess = (req, res, next) => {
   if (req.user && req.user.isAdmin) {
     next();
   } else {
     res.status(401);
-    throw new Error("Not Authorized as an admin");
+    next(error);
   }
 };
 

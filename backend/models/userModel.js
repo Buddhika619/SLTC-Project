@@ -81,6 +81,14 @@ export const unapprovedUsers = async () => {
 };
 
 
+export const getUnapprovedUsersCount = async () => {
+  const count = await User.count({
+    where: { isApproved: false },
+  });
+  return count;
+};
+
+
 export const getUserById = async (id) => {
   const user = await User.findByPk(id, {
     exclude: ["password"],

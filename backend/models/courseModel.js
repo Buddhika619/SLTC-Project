@@ -83,14 +83,44 @@ export const getAllCourses = async () => {
 };
 
 
+export const getAllCoursesCount = async () => {
+  const count = await Course.count();
+
+  return count;
+};
+
+
 export const getCoursesByTeacherID = async (teacherID) => {
   const courses = await Course.findAll({
     where: {
       teacherID: teacherID,
     },
+    include: [
+      {
+        model: Teacher,
+        include: [
+          {
+            model: User,
+            attributes: ["firstName", "lastName"], // Include teacher's name from the User table
+          },
+        ],
+      },
+      { model: Faculty },
+    ],
   });
 
   return courses;
+};
+
+
+export const getCourseCountByTeacherID = async (teacherID) => {
+  const count = await Course.count({
+    where: {
+      teacherID: teacherID,
+    },
+  });
+
+  return count;
 };
 
 

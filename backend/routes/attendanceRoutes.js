@@ -7,10 +7,11 @@ import {
   createAttendanceHandler,
   updateAttendanceHandler,
   deleteAttendanceHandler,
-  getAttendanceForSingleStudentHandler
+  getAttendanceForSingleStudentHandler,
+  markAttendanceWithQRHandler
 } from "../controllers/attendanceControler.js";
 
-import { basicAuth, adminAccess } from "../middleware/authMiddleware.js";
+import { basicAuth, adminAccess, studentAccess } from "../middleware/authMiddleware.js";
 
 router
   .route("/")
@@ -19,12 +20,15 @@ router
 
 router
   .route("/student/:id")
-  .get(basicAuth, adminAccess, getAttendanceForSingleStudentHandler);
+  .get(basicAuth, studentAccess, getAttendanceForSingleStudentHandler);
 
 router
   .route("/:studentID/:sessionID")
   .get(basicAuth, adminAccess, getAttendanceByIdHandler)
   .put(basicAuth, adminAccess, updateAttendanceHandler)
   .delete(basicAuth, adminAccess, deleteAttendanceHandler);
+
+
+router.get('/qr/:studentID/:sessionID', basicAuth, studentAccess, markAttendanceWithQRHandler)
 
 export default router;

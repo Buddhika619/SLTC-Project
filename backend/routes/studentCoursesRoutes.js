@@ -10,7 +10,7 @@ import {
   getCoursesForSingleStudentHandler
 } from "../controllers/studentCoursesController.js";
 
-import { basicAuth, adminAccess } from "../middleware/authMiddleware.js";
+import { basicAuth, adminAccess, studentAccess } from "../middleware/authMiddleware.js";
 
 router
   .route("/")
@@ -19,7 +19,7 @@ router
 
   router
   .route("/student/:id")
-  .get(basicAuth, adminAccess, getCoursesForSingleStudentHandler);
+  .get(basicAuth, studentAccess, getCoursesForSingleStudentHandler);
 
 router
   .route("/:studentID/:courseID")

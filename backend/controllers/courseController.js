@@ -5,6 +5,7 @@ import {
   getCourseById,
   updateCourseById,
   deleteCourseById,
+  getCoursesByTeacherID
 } from "../models/courseModel.js";
 import { findFacultyByDepartment } from "../models/facultyModel.js";
 
@@ -92,11 +93,27 @@ const deleteCourseByIdHandler = async (req, res, next) => {
   }
 };
 
+// @desc view teacher course list 
+// @route DELETE /api/course/teacher
+// @access admin/teacher
+
+const getTeacherCourseListHandler = async (req, res, next) => {
+  try {
+
+  const response=  await getCoursesByTeacherID(req.user.teacherID);
+    res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 export {
   createCourseHandler,
   getAllCoursesHandler,
   getCourseByIdHandler,
   updateCourseByIdHandler,
   deleteCourseByIdHandler,
+  getTeacherCourseListHandler
   
 };

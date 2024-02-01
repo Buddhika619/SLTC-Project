@@ -48,6 +48,12 @@ export const getTeacherList = async () => {
   return teachers
 }
 
+export const getTeacherCount = async () => {
+  const count = await Teacher.count();
+
+  return count;
+};
+
 
 export const getTeacherByUserId = async (userID) => {
   const teacher = await Teacher.findOne({

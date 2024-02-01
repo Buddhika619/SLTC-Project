@@ -54,6 +54,14 @@ export const getStudentList = async () => {
   return students
 }
 
+
+export const getStudentCount = async () => {
+  const count = await Student.count();
+
+  return count;
+};
+
+
 export const getStudentByUserId = async (userID) => {
 
   const student = await Student.findOne({

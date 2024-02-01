@@ -70,9 +70,45 @@ const createAttendanceHandler = async (req, res, next) => {
   try {
     const { studentID, sessionID } = req.body;
 
-
+    const attendance = await getAttendanceById(studentID, sessionID);
+    if (attendance) {
+      res.status(404);
+      throw new Error("Already Marked the attendance");
+    }
 
     if (req.user.userID === req.params.id || req.user.isAdmin) {
+      const createdAttendance = await createAttendance({
+        studentID,
+        sessionID,
+        isPresent: true,
+      });
+      res.status(201).json(createdAttendance);
+    } else {
+      res.status(401);
+      throw new Error("Not Authorized");
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+// @desc Create a new attendance record with qr
+// @route get /api/attendance/qr/:studentID/:sessionID
+// @access admin
+
+const markAttendanceWithQRHandler = async (req, res, next) => {
+  try {
+    const { studentID, sessionID } = req.params;
+    console.log(req.params)
+
+    const attendance = await getAttendanceById(studentID, sessionID);
+    if (attendance) {
+      res.status(404);
+      throw new Error("Already Marked the attendance");
+    }
+
+    if (req.user.studentID === req.params.studentID || req.user.isAdmin) {
       const createdAttendance = await createAttendance({
         studentID,
         sessionID,
@@ -129,5 +165,6 @@ export {
   createAttendanceHandler,
   updateAttendanceHandler,
   deleteAttendanceHandler,
+  markAttendanceWithQRHandler,
   getAttendanceForSingleStudentHandler
 };

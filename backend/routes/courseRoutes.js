@@ -7,10 +7,11 @@ import {
   getCourseByIdHandler,
   updateCourseByIdHandler,
   deleteCourseByIdHandler,
+  getTeacherCourseListHandler
   
 } from "../controllers/courseController.js";
 
-import { basicAuth, adminAccess } from "../middleware/authMiddleware.js";
+import { basicAuth, adminAccess, teacherAccess } from "../middleware/authMiddleware.js";
 
 router
   .route("/")
@@ -18,7 +19,7 @@ router
   .get(basicAuth, adminAccess, getAllCoursesHandler);
 
 
-
+  router.get('/teacher',basicAuth, teacherAccess, getTeacherCourseListHandler)
 router
   .route("/:id")
   .get(basicAuth, adminAccess, getCourseByIdHandler)

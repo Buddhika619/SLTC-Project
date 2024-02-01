@@ -57,7 +57,6 @@ export const getAttendanceList = async () => {
   return attendanceList;
 };
 
-
 export const getAttendanceListforSingleStudent = async (id) => {
   const attendanceList = await Attendance.findAll({
     where: {
@@ -87,33 +86,28 @@ export const getAttendanceListforSingleStudent = async (id) => {
 };
 
 export const getAttendanceById = async (studentID, sessionID) => {
-  const attendance = await Attendance.findByPk(
-    {
-      studentID,
-      sessionID,
-    },
-    {
-      include: [
-        {
-          model: Student,
-          include: [
-            {
-              model: User,
-              exclude: ["password"],
-            },
-          ],
-        },
-        {
-          model: Session,
-          include: [
-            {
-              model: Course,
-            },
-          ],
-        },
-      ],
-    }
-  );
+  const attendance = await Attendance.findOne({
+    where: { studentID: studentID, sessionID: sessionID },
+    include: [
+      {
+        model: Student,
+        include: [
+          {
+            model: User,
+            exclude: ["password"],
+          },
+        ],
+      },
+      {
+        model: Session,
+        include: [
+          {
+            model: Course,
+          },
+        ],
+      },
+    ],
+  });
   return attendance;
 };
 
@@ -124,13 +118,13 @@ export const createAttendance = async (attendanceData) => {
 
 export const updateAttendance = async (studentID, sessionID, updatedData) => {
   const updatedAttendance = await Attendance.update(updatedData, {
-    where: {studentID, sessionID},
+    where: { studentID, sessionID },
   });
   return updatedAttendance;
 };
 
 export const deleteAttendance = async (studentID, sessionID) => {
-  console.log('session ids' + sessionID)
+  console.log("session ids" + sessionID);
   const deletedAttendance = await Attendance.destroy({
     where: { studentID, sessionID },
   });

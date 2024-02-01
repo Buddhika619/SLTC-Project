@@ -14,6 +14,7 @@ import sessionLocationRoutes from './routes/sessionLocationRoutes.js'
 import sessionRoutes from './routes/sessionRoutes.js'
 import studentCoursesRoutes from './routes/studentCoursesRoutes.js'
 import teacherCoursesRoutes from './routes/teacherCoursesRoutes.js'
+import statsRoutes from './routes/statsRoutes.js'
 
 dotenv.config();
 
@@ -47,7 +48,7 @@ app.use('/api/session', sessionRoutes)
 app.use('/api/session-location', sessionLocationRoutes)
 app.use('/api/students-courses', studentCoursesRoutes)
 app.use('/api/teachers-courses', teacherCoursesRoutes)
-
+app.use('/api/stats', statsRoutes)
 
 //error handling
 app.use(notFound);
