@@ -1,8 +1,4 @@
-import {
-  Box,
-  Button,
-  TextField,
-} from "@mui/material";
+import { Box, Button, TextField } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -50,7 +46,6 @@ const FacultyUpdateForm = () => {
 
   const formMutation = useMutation(createOrUpdate, {
     onMutate: () => {
-
       setLoading(true);
     },
     onSuccess: (data, variable) => {

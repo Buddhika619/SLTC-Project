@@ -1,9 +1,7 @@
-import { Box, Button, useTheme } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { tokens } from "../../../theme";
 
 import DeleteOutline from "@mui/icons-material/DeleteOutline";
-import DesignServices from "@mui/icons-material/DesignServices";
 
 import AdminHeader from "../../../components/AdminHeader";
 import { useState } from "react";
@@ -23,10 +21,9 @@ import { toast } from "react-toastify";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { deleteCourse, viewCourseList } from "../../../api/courseEndPoints";
+import { datagridStyles } from "../../../constants/styles";
 
 const CourseList = () => {
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
   const [selectedRows, setSelectedRows] = useState([]);
 
   const queryClient = useQueryClient();
@@ -60,15 +57,7 @@ const CourseList = () => {
     content = courseList;
   }
 
-  const update = () => {
-
-    navigate(`/admin/course/update`, {
-      state: { ...selectedRows[0] },
-    });
-  };
-
   const create = () => {
-
     navigate(`/admin/course/update`);
   };
 
@@ -92,17 +81,16 @@ const CourseList = () => {
       flex: 1,
     },
     {
-        field: "courseYear",
-        headerName: "Acedemic Year",
-        flex: 1,
-      },
-
+      field: "courseYear",
+      headerName: "Acedemic Year",
+      flex: 1,
+    },
 
     {
-        field: "facultyName",
-        headerName: "Faculty Name",
-        flex: 1,
-      },
+      field: "facultyName",
+      headerName: "Faculty Name",
+      flex: 1,
+    },
 
     {
       field: "techerFirstName",
@@ -115,8 +103,6 @@ const CourseList = () => {
       headerName: "Teacher Last Name",
       flex: 1,
     },
-
-    
   ];
 
   let rows = content?.map((content) => ({
@@ -141,13 +127,6 @@ const CourseList = () => {
           <span className="px-2">Create</span>
         </Button>
 
-        {/* {selectedRows.length === 1 && (
-          <Button className="p-0 pe-2" variant="text" onClick={() => update()}>
-            <DesignServices fontSize="small" />
-            <span className="px-2">Update</span>
-          </Button>
-        )} */}
-
         {selectedRows.length === 1 && (
           <Button className="p-0 pe-2" variant="text" onClick={() => remove()}>
             <DeleteOutline fontSize="small" style={{ color: "red" }} />
@@ -164,38 +143,7 @@ const CourseList = () => {
     <Box m="20px">
       <AdminHeader title="Course List" subtitle="Manage Courses" />
 
-      <Box
-        m="40px 0 0 0"
-        height="75vh"
-        sx={{
-          "& .MuiDataGrid-root": {
-            border: "none",
-          },
-          "& .MuiDataGrid-cell": {
-            borderBottom: "none",
-          },
-          "& .name-column--cell": {
-            color: colors.greenAccent[300],
-          },
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: colors.blueAccent[700],
-            borderBottom: "none",
-          },
-          "& .MuiDataGrid-virtualScroller": {
-            backgroundColor: colors.primary[400],
-          },
-          "& .MuiDataGrid-footerContainer": {
-            borderTop: "none",
-            backgroundColor: colors.blueAccent[700],
-          },
-          "& .MuiCheckbox-root": {
-            color: `${colors.greenAccent[200]} !important`,
-          },
-          "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-            color: `${colors.grey[100]} !important`,
-          },
-        }}
-      >
+      <Box m="40px 0 0 0" height="75vh" sx={datagridStyles}>
         <DataGrid
           rows={rows}
           columns={columns}

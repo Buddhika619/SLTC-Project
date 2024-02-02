@@ -177,123 +177,7 @@ const getUnapprovedUsers = async (req, res, next) => {
 // @route PUT /api/users/:id
 // @access admin
 
-// const updateUser = async (req, res, next) => {
-//   try {
-//     const {
-//       firstName,
-//       lastName,
-//       email,
-//       password,
-//       isAdmin,
-//       isApproved,
-//       faculty,
-//       role,
-//       date,
-//     } = req.body;
-
-//     // Validate email and password
-//     if (password && !CustomValidator.validateEmail(email)) {
-//       res.status(400);
-//       throw new Error("Invalid Email");
-//     }
-
-//     if (email && !CustomValidator.validatePassword(password)) {
-//       res.status(400);
-//       throw new Error("Invalid password");
-//     }
-
-//     const user = await getUserById(req.params.id);
-
-//     if (!user) {
-//       res.status(404);
-//       throw new Error("User not found");
-//     }
-
-//     // Check if faculty exists
-//     const facultyRes = await findFacultyByDepartment(faculty);
-
-//     if (!facultyRes) {
-//       res.status(400);
-//       throw new Error("Faculty does not exist");
-//     }
-
-//     if (!firstName || !lastName || !email || !role || !faculty || !date) {
-//       res.status(400);
-//       throw new Error("Fill all required fileds");
-//     }
-
-//     // Update user properties
-//     const salt = await bcrypt.genSalt(10);
-//     user.set({
-//       firstName: firstName,
-//       lastName: lastName,
-//       email: email,
-//       isAdmin: typeof isAdmin === "boolean" ? isAdmin : user.isAdmin,
-//       password: password ? await bcrypt.hash(password, salt) : user.password,
-//       isApproved:
-//         typeof isApproved === "boolean" ? isApproved : user.isApproved,
-//     });
-
-//     // Update role-specific information
-//     const updateRoleInformation = async (Model, roleType) => {
-//      console.log(req.params.id)
-//       const roleInstance = await Model.findOne({
-//         where: { userID: req.params.id },
-//       });
-
-//       if (!roleInstance) {
-
-//         await Model.create({
-//           userID: req.params.id,
-//           facultyID: facultyRes.facultyID,
-//           enrollmentDate: new Date(date),
-//           [`${roleType}ID`]: uuidv4(),
-//         });
-//       } else {
-//         await Model.update(
-//           {
-//             facultyID: facultyRes.facultyID,
-//             enrollmentDate: new Date(date),
-//           },
-//           {
-//             where: {
-//               userID: req.params.id,
-//             },
-//           }
-//         );
-
-//         await roleInstance.save();
-//       }
-//     };
-
-//     // Handle role-specific updates
-//     if (role === "STUDENT") {
-//       await updateRoleInformation(Student, "student");
-//     } else if (role === "TEACHER") {
-//       await updateRoleInformation(Teacher, "teacher");
-//     } else if (role === "NONAC") {
-//       await updateRoleInformation(NonAcademicStaff, "staff");
-//     }
-
-//     await user.save();
-
-//     // Respond with updated user details
-//     res.status(200).json({
-//       userID: user.userID,
-//       firstName: user.firstName,
-//       lastName: user.lastName,
-//       isAdmin: user.isAdmin,
-//       email: user.email,
-//       isApproved: user.isApproved,
-//     });
-//   } catch (err) {
-//     next(err);
-//   }
-// };
-
 const updateUser = async (req, res, next) => {
-
-  console.log(req.body)
   const t = await db.transaction(); // Assuming sequelize is your ORM instance
 
   try {
@@ -536,17 +420,16 @@ const studentList = asyncHandler(async (req, res) => {
 // @access admin
 
 const deleteUser = asyncHandler(async (req, res) => {
+  if (req.user.userID == req.params.id) {
+    res.status(400);
+    throw new Error("Can't delete currently logged in account");
+  }
 
- if(req.user.userID == req.params.id) {
-  res.status(400);
-  throw new Error("Can't delete currently logged in account");
- }
+  await deleteUserById(req.params.id);
 
- await deleteUserById(req.params.id);
-
- res.status(200).json({
-   msg: "user deleted successfully",
- });
+  res.status(200).json({
+    msg: "user deleted successfully",
+  });
 });
 
 // @desc  delete teacher

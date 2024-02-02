@@ -12,7 +12,7 @@ const Course = db.define("course", {
   courseName: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true
+    unique: true,
   },
   teacherID: {
     type: DataTypes.UUID,
@@ -22,7 +22,7 @@ const Course = db.define("course", {
     type: DataTypes.UUID,
     allowNull: false,
   },
-  
+
   year: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -82,13 +82,11 @@ export const getAllCourses = async () => {
   return courses;
 };
 
-
 export const getAllCoursesCount = async () => {
   const count = await Course.count();
 
   return count;
 };
-
 
 export const getCoursesByTeacherID = async (teacherID) => {
   const courses = await Course.findAll({
@@ -112,7 +110,6 @@ export const getCoursesByTeacherID = async (teacherID) => {
   return courses;
 };
 
-
 export const getCourseCountByTeacherID = async (teacherID) => {
   const count = await Course.count({
     where: {
@@ -122,8 +119,6 @@ export const getCourseCountByTeacherID = async (teacherID) => {
 
   return count;
 };
-
-
 
 export const getCoursesByFaculty = async (FacultyID) => {
   const courses = await Course.findAll({
@@ -169,7 +164,6 @@ export const getCourseById = async (id) => {
 
 // Update course by ID
 export const updateCourseById = async (id, updates) => {
-  console.log(id)
   const course = await Course.findByPk(id);
 
   if (!course) {

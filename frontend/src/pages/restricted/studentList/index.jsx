@@ -1,6 +1,5 @@
-import { Box, Button, useTheme } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { tokens } from "../../../theme";
 
 import DeleteOutline from "@mui/icons-material/DeleteOutline";
 import DesignServices from "@mui/icons-material/DesignServices";
@@ -26,11 +25,10 @@ import BeenhereIcon from "@mui/icons-material/Beenhere";
 
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 
-import EditCalendarTwoToneIcon from '@mui/icons-material/EditCalendarTwoTone';
+import EditCalendarTwoToneIcon from "@mui/icons-material/EditCalendarTwoTone";
+import { datagridStyles } from "../../../constants/styles";
 
 const StudentList = () => {
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
   const [selectedRows, setSelectedRows] = useState([]);
 
   const queryClient = useQueryClient();
@@ -74,34 +72,28 @@ const StudentList = () => {
   };
 
   const viewAttendance = () => {
-
     navigate(`/admin/studentattendancelist`, {
       state: { ...selectedRows[0] },
     });
   };
 
-  
   const manageCourses = () => {
-
     navigate(`/admin/studentcourselist`, {
       state: { ...selectedRows[0] },
     });
-  }
+  };
 
   const viewSessions = () => {
-
     navigate(`/admin/studentsessionlist`, {
       state: { ...selectedRows[0] },
     });
-  }
+  };
 
   const removeUser = () => {
     if (window.confirm("Are you sure?")) {
       deleteMutation.mutate(selectedRows[0].userID);
     }
   };
-
-
 
   const columns = [
     {
@@ -237,38 +229,7 @@ const StudentList = () => {
     <Box m="20px">
       <AdminHeader title="Student List" subtitle="Manage Students" />
 
-      <Box
-        m="40px 0 0 0"
-        height="75vh"
-        sx={{
-          "& .MuiDataGrid-root": {
-            border: "none",
-          },
-          "& .MuiDataGrid-cell": {
-            borderBottom: "none",
-          },
-          "& .name-column--cell": {
-            color: colors.greenAccent[300],
-          },
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: colors.blueAccent[700],
-            borderBottom: "none",
-          },
-          "& .MuiDataGrid-virtualScroller": {
-            backgroundColor: colors.primary[400],
-          },
-          "& .MuiDataGrid-footerContainer": {
-            borderTop: "none",
-            backgroundColor: colors.blueAccent[700],
-          },
-          "& .MuiCheckbox-root": {
-            color: `${colors.greenAccent[200]} !important`,
-          },
-          "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-            color: `${colors.grey[100]} !important`,
-          },
-        }}
-      >
+      <Box m="40px 0 0 0" height="75vh" sx={datagridStyles}>
         <DataGrid
           rows={rows}
           columns={columns}

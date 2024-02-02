@@ -1,4 +1,4 @@
-import { DataTypes, Op,literal } from "sequelize";
+import { DataTypes, Op, literal } from "sequelize";
 import db from "../config/db.js";
 import Course from "./courseModel.js";
 import SessionLocation from "./sessionLocationModel.js";
@@ -65,7 +65,7 @@ export const createSession = async (
 export const getParallelSessions = async (dateTime, minutes) => {
   const originalDate = new Date(dateTime);
   const utcDate = new Date(originalDate.toUTCString());
-  
+
   // Add minutes to the UTC date to get the end time
   const endDate = new Date(utcDate.getTime() + minutes * 60000);
 
@@ -79,13 +79,11 @@ export const getParallelSessions = async (dateTime, minutes) => {
     include: [
       {
         model: Course, // Assuming you have a Course model
-
       },
       {
         model: SessionLocation, // Assuming you have a Location model
-
       },
-    ]
+    ],
   });
 
   return results;
@@ -114,12 +112,11 @@ export const getAllSessions = async () => {
         include: [
           {
             model: Faculty,
-  
           },
         ],
       },
     ],
-    order: [['dateTime', 'DESC']], 
+    order: [["dateTime", "DESC"]],
   });
 
   return sessions;
@@ -136,7 +133,7 @@ export const getSessionById = async (id) => {
             model: Teacher,
             include: [
               {
-                model: userID,
+                model: User,
                 exclude: ["password"],
               },
             ],
@@ -151,17 +148,16 @@ export const getSessionById = async (id) => {
 
   return session;
 };
-
 
 export const getAllActiveSessions = async () => {
   const currentTime = new Date();
   const utctime = new Date(currentTime.toUTCString());
-  console.log(utctime)
-  const session = await Session.findAll( {
+
+  const session = await Session.findAll({
     where: {
-        dateTime: {
-          [Op.gt]: literal('CURRENT_TIMESTAMP'), // Adjust this based on your database
-        },
+      dateTime: {
+        [Op.gt]: literal("CURRENT_TIMESTAMP"), // Adjust this based on your database
+      },
     },
     include: [
       {
@@ -180,28 +176,25 @@ export const getAllActiveSessions = async () => {
       },
       {
         model: SessionLocation,
-        include: [
-         { model: Faculty}
-        ]
+        include: [{ model: Faculty }],
       },
     ],
-    order: [['dateTime', 'ASC']], 
+    order: [["dateTime", "ASC"]],
   });
 
   return session;
 };
 
-
 export const getSessionByCourseID = async (id) => {
   const currentTime = new Date();
   const utctime = new Date(currentTime.toUTCString());
-  console.log(id)
-  const session = await Session.findAll( {
+
+  const session = await Session.findAll({
     where: {
       courseID: id,
-        dateTime: {
-          [Op.gt]: literal('CURRENT_TIMESTAMP'), // Adjust this based on your database
-        },
+      dateTime: {
+        [Op.gt]: literal("CURRENT_TIMESTAMP"), // Adjust this based on your database
+      },
     },
     include: [
       {
@@ -220,12 +213,10 @@ export const getSessionByCourseID = async (id) => {
       },
       {
         model: SessionLocation,
-        include: [
-         { model: Faculty}
-        ]
+        include: [{ model: Faculty }],
       },
     ],
-    order: [['dateTime', 'ASC']], 
+    order: [["dateTime", "ASC"]],
   });
 
   return session;
@@ -233,7 +224,7 @@ export const getSessionByCourseID = async (id) => {
 // Update session by ID
 export const updateSessionById = async (id, updates) => {
   const session = await Session.findByPk(id);
-  console.log(updates)
+
   if (!session) {
     throw new Error("Session not found");
   }

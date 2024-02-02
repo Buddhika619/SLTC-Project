@@ -1,9 +1,7 @@
-import { Box, Button, useTheme } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { tokens } from "../../../theme";
 
 import DeleteOutline from "@mui/icons-material/DeleteOutline";
-import DesignServices from "@mui/icons-material/DesignServices";
 
 import AdminHeader from "../../../components/AdminHeader";
 import { useState } from "react";
@@ -22,21 +20,16 @@ import { useQuery, useMutation, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { deleteCourse } from "../../../api/courseEndPoints";
+
 import {
-  deleteLocation,
-  viewLocationList,
-} from "../../../api/locationEndPoints";
-import { deleteAttendance, getStudentAttendance } from "../../../api/attendanceEndPoints";
+  deleteAttendance,
+  getStudentAttendance,
+} from "../../../api/attendanceEndPoints";
+import { datagridStyles } from "../../../constants/styles";
 
 const AttendnaceList = () => {
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
   const [selectedRows, setSelectedRows] = useState([]);
   const { state: studentInfo } = useLocation();
-
-  console.log(studentInfo)
-
 
   const queryClient = useQueryClient();
 
@@ -68,20 +61,20 @@ const AttendnaceList = () => {
   } else {
     content = courseList;
   }
-;
-
   const create = () => {
     navigate(`/admin/attendance/update/${studentInfo.studentID}`);
   };
 
   const remove = () => {
     if (window.confirm("Are you sure?")) {
-      deleteMutation.mutate([selectedRows[0].studentID, selectedRows[0].sessionID]);
+      deleteMutation.mutate([
+        selectedRows[0].studentID,
+        selectedRows[0].sessionID,
+      ]);
     }
   };
 
   const columns = [
-
     {
       field: "sessionId",
       headerName: "Session ID",
@@ -107,7 +100,6 @@ const AttendnaceList = () => {
       headerName: "Time",
       flex: 1,
     },
-  
   ];
 
   let rows = content?.map((content) => ({
@@ -134,8 +126,6 @@ const AttendnaceList = () => {
           <span className="px-2">Create</span>
         </Button>
 
-      
-
         {selectedRows.length === 1 && (
           <Button className="p-0 pe-2" variant="text" onClick={() => remove()}>
             <DeleteOutline fontSize="small" style={{ color: "red" }} />
@@ -148,44 +138,14 @@ const AttendnaceList = () => {
     );
   };
 
-
-
   return (
     <Box m="20px">
-      <AdminHeader title={`Attendance List of  ${studentInfo.user.firstName} ${studentInfo.user.lastName}`} subtitle="Manage Student Attendance" />
+      <AdminHeader
+        title={`Attendance List of  ${studentInfo.user.firstName} ${studentInfo.user.lastName}`}
+        subtitle="Manage Student Attendance"
+      />
 
-      <Box
-        m="40px 0 0 0"
-        height="75vh"
-        sx={{
-          "& .MuiDataGrid-root": {
-            border: "none",
-          },
-          "& .MuiDataGrid-cell": {
-            borderBottom: "none",
-          },
-          "& .name-column--cell": {
-            color: colors.greenAccent[300],
-          },
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: colors.blueAccent[700],
-            borderBottom: "none",
-          },
-          "& .MuiDataGrid-virtualScroller": {
-            backgroundColor: colors.primary[400],
-          },
-          "& .MuiDataGrid-footerContainer": {
-            borderTop: "none",
-            backgroundColor: colors.blueAccent[700],
-          },
-          "& .MuiCheckbox-root": {
-            color: `${colors.greenAccent[200]} !important`,
-          },
-          "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-            color: `${colors.grey[100]} !important`,
-          },
-        }}
-      >
+      <Box m="40px 0 0 0" height="75vh" sx={datagridStyles}>
         <DataGrid
           rows={rows}
           columns={columns}

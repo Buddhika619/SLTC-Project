@@ -1,9 +1,7 @@
-import { Box, Button, useTheme } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { tokens } from "../../../theme";
 
 import DeleteOutline from "@mui/icons-material/DeleteOutline";
-import DesignServices from "@mui/icons-material/DesignServices";
 
 import AdminHeader from "../../../components/AdminHeader";
 import { useRef, useState } from "react";
@@ -23,17 +21,15 @@ import { toast } from "react-toastify";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
-import { deleteLocation, viewLocationList } from "../../../api/locationEndPoints";
 import { deleteSession, viewSessionList } from "../../../api/sessionEndPoints";
 
 import Qrmodel from "../../../components/Qrmodel";
 import QRCode from "qrcode";
 
 import QrCodeScannerIcon from "@mui/icons-material/QrCodeScanner";
+import { datagridStyles } from "../../../constants/styles";
 
 const SessionList = () => {
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
   const [selectedRows, setSelectedRows] = useState([]);
 
   const queryClient = useQueryClient();
@@ -79,8 +75,6 @@ const SessionList = () => {
     content = sessionlist;
   }
 
-
-
   const create = () => {
     navigate(`/admin/session/update`);
   };
@@ -92,7 +86,7 @@ const SessionList = () => {
   };
 
   const qrHandler = () => {
-    console.log(window.location.href.split("/")[2])
+    console.log(window.location.href.split("/")[2]);
     generateQR(
       `http://${window.location.href.split("/")[2]}/student/attandance/${
         selectedRows[0].sessionID
@@ -115,66 +109,54 @@ const SessionList = () => {
     {
       field: "minutes",
       headerName: "Minutes",
-      width: 60
-   
+      width: 60,
     },
     {
       field: "date",
       headerName: "Date",
-      width: 150
-    
+      width: 150,
     },
     {
-        field: "time",
-        headerName: "Time",
-        width: 100
-      
-      },
+      field: "time",
+      headerName: "Time",
+      width: 100,
+    },
     {
       field: "courseName",
       headerName: "Course Name",
-      width: 250
-     
+      width: 250,
     },
     {
       field: "year",
       headerName: "Academic Year",
-      width: 100
-      
+      width: 100,
     },
     {
       field: "teacherFirstName",
       headerName: "Teacher First Name",
-      width: 120
-   
+      width: 120,
     },
     {
       field: "teacherSecondName",
       headerName: "Teacher Second Name",
-      width: 120
-    
+      width: 120,
     },
     {
       field: "email",
       headerName: "Teacher Email",
-      width: 200
-     
+      width: 200,
     },
     {
       field: "location",
       headerName: "Location Name",
-      width: 100
+      width: 100,
     },
     {
       field: "faculty",
       headerName: "Faculty",
-      width: 150
+      width: 150,
     },
   ];
-  
-
-
-
 
   let rows = content?.map((content) => ({
     id: content?.sessionID,
@@ -188,8 +170,7 @@ const SessionList = () => {
     teacherSecondName: content.course?.teacher?.user?.lastName,
     email: content.course?.teacher?.user?.email,
     location: content?.session_location?.name,
-    faculty: content?.session_location?.faculty.department
-
+    faculty: content?.session_location?.faculty.department,
   }));
 
   const CustomToolbar = () => {
@@ -232,38 +213,7 @@ const SessionList = () => {
     <Box m="20px">
       <AdminHeader title="Session List" subtitle="Manage Sessions" />
 
-      <Box
-        m="40px 0 0 0"
-        height="75vh"
-        sx={{
-          "& .MuiDataGrid-root": {
-            border: "none",
-          },
-          "& .MuiDataGrid-cell": {
-            borderBottom: "none",
-          },
-          "& .name-column--cell": {
-            color: colors.greenAccent[300],
-          },
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: colors.blueAccent[700],
-            borderBottom: "none",
-          },
-          "& .MuiDataGrid-virtualScroller": {
-            backgroundColor: colors.primary[400],
-          },
-          "& .MuiDataGrid-footerContainer": {
-            borderTop: "none",
-            backgroundColor: colors.blueAccent[700],
-          },
-          "& .MuiCheckbox-root": {
-            color: `${colors.greenAccent[200]} !important`,
-          },
-          "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-            color: `${colors.grey[100]} !important`,
-          },
-        }}
-      >
+      <Box m="40px 0 0 0" height="75vh" sx={datagridStyles}>
         <DataGrid
           rows={rows}
           columns={columns}

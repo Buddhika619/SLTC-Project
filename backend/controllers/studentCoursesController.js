@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from "uuid";
 import {
   createStudentCourseRelationship,
   getAllStudentCourseRelationships,
@@ -19,7 +18,6 @@ import {
 // @access admin
 
 const createStudentCourseRelationshipHandler = async (req, res, next) => {
-  console.log(req.body);
   try {
     const { studentID, courseID } = req.body;
     let relationship;

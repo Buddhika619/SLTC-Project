@@ -54,8 +54,6 @@ const CourseUpdateForm = () => {
     }
   }, [courseInfo]);
 
-
-
   const formMutation = useMutation(createOrUpdateCourse, {
     onMutate: () => {
       setLoading(true);

@@ -1,23 +1,13 @@
 import { useState } from "react";
-import { ProSidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
+import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
 import "react-pro-sidebar/dist/css/styles.css";
 import { tokens } from "../theme";
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
-import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
-import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
-import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
-import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
-import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
-import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
-import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutlined";
-import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
-import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
-import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
-import { useSelector } from "react-redux";
 
+import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
+
+import { useSelector } from "react-redux";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -37,11 +27,9 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
   );
 };
 
-const SideBar = ({navigationItems}) => {
+const SideBar = ({ navigationItems }) => {
   const auth = useSelector((state) => state.auth);
-  const { loading, error, userInfo } = auth;
-
-  console.log(userInfo.userData.user.lastName);
+  const { userInfo } = auth;
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -98,15 +86,6 @@ const SideBar = ({navigationItems}) => {
 
           {!isCollapsed && (
             <Box mb="25px">
-              {/* <Box display='flex' justifyContent='center' alignItems='center'>
-                <img
-                  alt='profile-user'
-                  width='100px'
-                  height='100px'
-                  src={`../../assets/user.jpg`}
-                  style={{ cursor: 'pointer', borderRadius: '50%' }}
-                />
-              </Box> */}
               <Box textAlign="center">
                 <Typography
                   variant="h2"
@@ -122,14 +101,13 @@ const SideBar = ({navigationItems}) => {
               </Box>
             </Box>
           )}
-        
 
           {/*Menu items */}
 
           <Box paddingLeft={isCollapsed ? undefined : "10%"}>
             {navigationItems.map((item, index) => (
               <Item
-              key={item.to}
+                key={item.to}
                 title={item.title}
                 to={item.to}
                 icon={item.icon}

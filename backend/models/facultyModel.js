@@ -8,8 +8,8 @@ const Faculty = db.define("faculty", {
   },
   department: {
     type: DataTypes.STRING,
-    allowNull: false, 
-    unique: true
+    allowNull: false,
+    unique: true,
   },
 });
 
@@ -18,10 +18,9 @@ export default Faculty;
 // resuable queries =============================================================
 
 export const createFaculty = async (department, facultyID) => {
-  const faculty = await Faculty.create({ department,facultyID });
+  const faculty = await Faculty.create({ department, facultyID });
   return faculty;
 };
-
 
 export const findFacultyByDepartment = async (faculty) => {
   const facultyRes = await Faculty.findOne({
@@ -38,13 +37,11 @@ export const getAllFaculties = async () => {
   return faculties;
 };
 
-
 export const getAllFacultiesCount = async () => {
   const count = await Faculty.count();
 
   return count;
 };
-
 
 export const getFacultyById = async (id) => {
   const faculty = await Faculty.findByPk(id, {
@@ -61,7 +58,6 @@ export const updateFacultyById = async (id, updates) => {
     throw new Error("Faculty not found");
   }
 
- console.log('ddddddddddaa')
   await faculty.update(updates);
 
   return faculty;

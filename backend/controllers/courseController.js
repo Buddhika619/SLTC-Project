@@ -5,7 +5,7 @@ import {
   getCourseById,
   updateCourseById,
   deleteCourseById,
-  getCoursesByTeacherID
+  getCoursesByTeacherID,
 } from "../models/courseModel.js";
 import { findFacultyByDepartment } from "../models/facultyModel.js";
 
@@ -21,12 +21,17 @@ const createCourseHandler = async (req, res, next) => {
       res.status(400);
       throw new Error("Fields cannot be empty");
     }
- 
-     const faculty =await findFacultyByDepartment(facultyName);
 
+    const faculty = await findFacultyByDepartment(facultyName);
 
     const courseID = uuidv4();
-    const course = await createCourse(courseID, courseName, teacherID, faculty.facultyID, year);
+    const course = await createCourse(
+      courseID,
+      courseName,
+      teacherID,
+      faculty.facultyID,
+      year
+    );
 
     res.status(201).json(course);
   } catch (error) {
@@ -47,9 +52,6 @@ const getAllCoursesHandler = async (req, res, next) => {
   }
 };
 
-
-
-
 // @desc View single course
 // @route GET /api/course/:id
 // @access admin
@@ -69,7 +71,7 @@ const getCourseByIdHandler = async (req, res, next) => {
 
 const updateCourseByIdHandler = async (req, res, next) => {
   const { courseName, teacherID, facultyID, year } = req.body;
-  console.log(req.body)
+
   try {
     const updates = { courseName, teacherID, year };
     const course = await updateCourseById(req.params.id, updates);
@@ -93,20 +95,18 @@ const deleteCourseByIdHandler = async (req, res, next) => {
   }
 };
 
-// @desc view teacher course list 
+// @desc view teacher course list
 // @route DELETE /api/course/teacher
 // @access admin/teacher
 
 const getTeacherCourseListHandler = async (req, res, next) => {
   try {
-
-  const response=  await getCoursesByTeacherID(req.user.teacherID);
+    const response = await getCoursesByTeacherID(req.user.teacherID);
     res.status(200).json(response);
   } catch (error) {
     next(error);
   }
 };
-
 
 export {
   createCourseHandler,
@@ -114,6 +114,5 @@ export {
   getCourseByIdHandler,
   updateCourseByIdHandler,
   deleteCourseByIdHandler,
-  getTeacherCourseListHandler
-  
+  getTeacherCourseListHandler,
 };

@@ -19,13 +19,14 @@ const NonAcademicStaff = db.define("non_academic_staff", {
   },
 });
 
+NonAcademicStaff.belongsTo(User, { foreignKey: "userID", onDelete: "CASCADE" });
 
-NonAcademicStaff.belongsTo(User, { foreignKey: "userID", onDelete: "CASCADE",  });
-
-NonAcademicStaff.belongsTo(Faculty, { foreignKey: "facultyID", onDelete: "CASCADE",  });
+NonAcademicStaff.belongsTo(Faculty, {
+  foreignKey: "facultyID",
+  onDelete: "CASCADE",
+});
 
 export default NonAcademicStaff;
-
 
 // resuable query======================================================
 
@@ -39,16 +40,13 @@ export const createNonAcademicStaff = async (userID, facultyID) => {
   return nonAcademicStaff;
 };
 
-
-
 export const getStaffList = async () => {
-
   const staff = await NonAcademicStaff.findAll({
     include: [
       {
         model: User,
         // attributes: [ 'firstName', 'lastName', 'email', 'role', 'isAdmin', 'isApproved'],
-        exclude: ['password'],
+        exclude: ["password"],
       },
       {
         model: Faculty,
@@ -57,9 +55,8 @@ export const getStaffList = async () => {
     ],
   });
 
-  return staff
-}
-
+  return staff;
+};
 
 export const getStaffByUserID = async (userID) => {
   const staff = await NonAcademicStaff.findOne({
@@ -68,9 +65,8 @@ export const getStaffByUserID = async (userID) => {
     include: [
       {
         model: User,
-        attributes: [ 'userID', 'firstName', 'lastName', 'email', 'isAdmin'],
+        attributes: ["userID", "firstName", "lastName", "email", "isAdmin"],
       },
-      
     ],
   });
 
@@ -84,7 +80,7 @@ export const updateNonAcademicStaffById = async (id, updates) => {
   if (!staff) {
     throw new Error("Non-academic staff not found");
   }
-d
+  d;
   await staff.update(updates);
 
   return staff;

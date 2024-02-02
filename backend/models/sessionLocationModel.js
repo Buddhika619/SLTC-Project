@@ -18,16 +18,16 @@ const SessionLocation = db.define("session_location", {
     type: DataTypes.UUID,
     allowNull: false,
   },
-
-  
 });
 
-SessionLocation.belongsTo(Faculty, { foreignKey: "facultyID", onDelete: "CASCADE" });
+SessionLocation.belongsTo(Faculty, {
+  foreignKey: "facultyID",
+  onDelete: "CASCADE",
+});
 
 export default SessionLocation;
 
 // reusable queries =================================================================
-
 
 // Create a new session location
 export const createSessionLocation = async (locationID, name, facultyID) => {
@@ -46,7 +46,6 @@ export const getAllSessionLocations = async () => {
     include: [
       {
         model: Faculty,
-        
       },
     ],
   });
@@ -57,11 +56,9 @@ export const getAllSessionLocations = async () => {
 // Read session location by ID
 export const getSessionLocationById = async (id) => {
   const sessionLocation = await SessionLocation.findByPk(id, {
-
     include: [
       {
         model: Faculty,
-
       },
     ],
   });
@@ -76,7 +73,6 @@ export const updateSessionLocationById = async (id, updates) => {
   if (!sessionLocation) {
     throw new Error("Session location not found");
   }
-
 
   await sessionLocation.update(updates);
 

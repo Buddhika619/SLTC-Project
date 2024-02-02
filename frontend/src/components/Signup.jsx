@@ -5,7 +5,7 @@ import FormAction from "./FormActions";
 import Input from "./Input";
 import { useDispatch, useSelector } from "react-redux";
 import { register } from "../api/authEndPoints";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { resetAuthState } from "../reducers/authSlice";
 
 const fields = signupFields;
@@ -16,7 +16,10 @@ fields.forEach((field) => (fieldsState[field.id] = ""));
 export default function Signup() {
   const [signupState, setSignupState] = useState(fieldsState);
   const handleChange = (e) =>
-    setSignupState((prevState) => ({ ...prevState, [e.target.id]: e.target.value }));
+    setSignupState((prevState) => ({
+      ...prevState,
+      [e.target.id]: e.target.value,
+    }));
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -35,22 +38,20 @@ export default function Signup() {
 
   useEffect(() => {
     if (success) {
-
       setSignupState(fieldsState);
       toast.success("Account created!");
-      dispatch(resetAuthState())
-      
+      dispatch(resetAuthState());
     }
-  }, [navigate, success,dispatch]);
+  }, [navigate, success, dispatch]);
 
   useEffect(() => {
     if (error && errorCount === 0) {
       setSignupState(fieldsState);
       toast.error(error);
       setErrorCount(1);
-      dispatch(resetAuthState())
+      dispatch(resetAuthState());
     }
-  }, [error, errorCount]);
+  }, [error, errorCount, dispatch]);
 
   const createAccount = async (signupState) => {
     setErrorCount(0);

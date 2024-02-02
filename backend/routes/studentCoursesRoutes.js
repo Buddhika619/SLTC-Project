@@ -7,17 +7,21 @@ import {
   getStudentCourseRelationshipByIdsHandler,
   updateStudentCourseRelationshipByIdsHandler,
   deleteStudentCourseRelationshipByIdsHandler,
-  getCoursesForSingleStudentHandler
+  getCoursesForSingleStudentHandler,
 } from "../controllers/studentCoursesController.js";
 
-import { basicAuth, adminAccess, studentAccess } from "../middleware/authMiddleware.js";
+import {
+  basicAuth,
+  adminAccess,
+  studentAccess,
+} from "../middleware/authMiddleware.js";
 
 router
   .route("/")
   .post(basicAuth, adminAccess, createStudentCourseRelationshipHandler)
   .get(basicAuth, adminAccess, getAllStudentCourseRelationshipsHandler);
 
-  router
+router
   .route("/student/:id")
   .get(basicAuth, studentAccess, getCoursesForSingleStudentHandler);
 

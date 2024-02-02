@@ -19,24 +19,22 @@ const Teacher = db.define("teacher", {
 });
 
 // Define association with User model
-Teacher.belongsTo(User, { foreignKey: "userID", onDelete: "CASCADE",  });
+Teacher.belongsTo(User, { foreignKey: "userID", onDelete: "CASCADE" });
 
 // Define association with Faculty model
-Teacher.belongsTo(Faculty, { foreignKey: "facultyID", onDelete: "CASCADE",  });
+Teacher.belongsTo(Faculty, { foreignKey: "facultyID", onDelete: "CASCADE" });
 
 export default Teacher;
-
 
 // resuable queries =============================================================
 
 export const getTeacherList = async () => {
-
   const teachers = await Teacher.findAll({
     include: [
       {
         model: User,
         // attributes: [ 'firstName', 'lastName', 'email', 'role', 'isAdmin', 'isApproved'],
-        exclude: ['password'],
+        exclude: ["password"],
       },
       {
         model: Faculty,
@@ -45,8 +43,8 @@ export const getTeacherList = async () => {
     ],
   });
 
-  return teachers
-}
+  return teachers;
+};
 
 export const getTeacherCount = async () => {
   const count = await Teacher.count();
@@ -54,22 +52,19 @@ export const getTeacherCount = async () => {
   return count;
 };
 
-
 export const getTeacherByUserId = async (userID) => {
   const teacher = await Teacher.findOne({
     where: { userID: userID },
     include: [
       {
         model: User,
-        exclude: ['password'],
+        exclude: ["password"],
       },
-      
     ],
   });
 
   return teacher;
 };
-
 
 export const updateTeacher = async (teacherID, updatedData) => {
   const updatedTeacher = await Teacher.update(updatedData, {

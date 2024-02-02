@@ -1,6 +1,5 @@
-import { Box, Button, useTheme } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { tokens } from "../../../theme";
 
 import AdminHeader from "../../../components/AdminHeader";
 import { useRef, useState } from "react";
@@ -20,9 +19,8 @@ import Qrmodel from "../../../components/Qrmodel";
 import QRCode from "qrcode";
 
 import QrCodeScannerIcon from "@mui/icons-material/QrCodeScanner";
+import { datagridStyles } from "../../../constants/styles";
 const TeacherSessionList = () => {
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
   const [selectedRows, setSelectedRows] = useState([]);
 
   const [open, setOpen] = useState(false);
@@ -133,7 +131,7 @@ const TeacherSessionList = () => {
   }));
 
   const qrHandler = () => {
-    console.log(window.location.href.split("/")[2])
+    console.log(window.location.href.split("/")[2]);
     generateQR(
       `http://${window.location.href.split("/")[2]}/attandance/${
         selectedRows[0].sessionID
@@ -171,38 +169,7 @@ const TeacherSessionList = () => {
     <Box m="20px">
       <AdminHeader title="Session List" subtitle="Manage Sessions" />
 
-      <Box
-        m="40px 0 0 0"
-        height="75vh"
-        sx={{
-          "& .MuiDataGrid-root": {
-            border: "none",
-          },
-          "& .MuiDataGrid-cell": {
-            borderBottom: "none",
-          },
-          "& .name-column--cell": {
-            color: colors.greenAccent[300],
-          },
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: colors.blueAccent[700],
-            borderBottom: "none",
-          },
-          "& .MuiDataGrid-virtualScroller": {
-            backgroundColor: colors.primary[400],
-          },
-          "& .MuiDataGrid-footerContainer": {
-            borderTop: "none",
-            backgroundColor: colors.blueAccent[700],
-          },
-          "& .MuiCheckbox-root": {
-            color: `${colors.greenAccent[200]} !important`,
-          },
-          "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-            color: `${colors.grey[100]} !important`,
-          },
-        }}
-      >
+      <Box m="40px 0 0 0" height="75vh" sx={datagridStyles}>
         <DataGrid
           rows={rows}
           columns={columns}

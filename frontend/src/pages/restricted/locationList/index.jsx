@@ -1,6 +1,5 @@
-import { Box, Button, useTheme } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { tokens } from "../../../theme";
 
 import DeleteOutline from "@mui/icons-material/DeleteOutline";
 import DesignServices from "@mui/icons-material/DesignServices";
@@ -22,12 +21,14 @@ import { useQuery, useMutation, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { deleteCourse } from "../../../api/courseEndPoints";
-import { deleteLocation, viewLocationList } from "../../../api/locationEndPoints";
+
+import {
+  deleteLocation,
+  viewLocationList,
+} from "../../../api/locationEndPoints";
+import { datagridStyles } from "../../../constants/styles";
 
 const LocationList = () => {
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
   const [selectedRows, setSelectedRows] = useState([]);
 
   const queryClient = useQueryClient();
@@ -97,8 +98,6 @@ const LocationList = () => {
     },
   ];
 
-
-
   let rows = content?.map((content) => ({
     id: content.locationID,
     locationName: content.name,
@@ -141,38 +140,7 @@ const LocationList = () => {
     <Box m="20px">
       <AdminHeader title="Location List" subtitle="Manage Locations" />
 
-      <Box
-        m="40px 0 0 0"
-        height="75vh"
-        sx={{
-          "& .MuiDataGrid-root": {
-            border: "none",
-          },
-          "& .MuiDataGrid-cell": {
-            borderBottom: "none",
-          },
-          "& .name-column--cell": {
-            color: colors.greenAccent[300],
-          },
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: colors.blueAccent[700],
-            borderBottom: "none",
-          },
-          "& .MuiDataGrid-virtualScroller": {
-            backgroundColor: colors.primary[400],
-          },
-          "& .MuiDataGrid-footerContainer": {
-            borderTop: "none",
-            backgroundColor: colors.blueAccent[700],
-          },
-          "& .MuiCheckbox-root": {
-            color: `${colors.greenAccent[200]} !important`,
-          },
-          "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-            color: `${colors.grey[100]} !important`,
-          },
-        }}
-      >
+      <Box m="40px 0 0 0" height="75vh" sx={datagridStyles}>
         <DataGrid
           rows={rows}
           columns={columns}

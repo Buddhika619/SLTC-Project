@@ -1,5 +1,5 @@
 import { getTeacherByUserId, getTeacherCount } from "../models/teacherModel.js";
-import { getUnapprovedUsersCount, getUserById } from "../models/userModel.js";
+import { getUnapprovedUsersCount } from "../models/userModel.js";
 import {
   getAllCoursesCount,
   getCourseCountByTeacherID,
@@ -44,8 +44,7 @@ const adminStatsHandler = async (req, res, next) => {
       }
       res.json({ courseCount, sessionCount });
     } else if (req.params.role === "student") {
-
-      let sessionCount = 0
+      let sessionCount = 0;
       const student = await getStudentByUserId(req.user.userID);
       const studentcourses = await getAllStudentCourseRelationshipsByUserID(
         student.studentID
@@ -57,7 +56,9 @@ const adminStatsHandler = async (req, res, next) => {
           sessionCount += sessionforcourse.length;
         }
       }
-      res.status(200).json({sessionCount,coursesCount: studentcourses.length});
+      res
+        .status(200)
+        .json({ sessionCount, coursesCount: studentcourses.length });
     } else {
       res.status(400);
       throw new Error("Invalid Role");

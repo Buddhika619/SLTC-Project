@@ -1,4 +1,3 @@
-import axios from "axios";
 import {
   userLoginRequest,
   userLoginSuccess,
@@ -8,22 +7,13 @@ import {
   userRegisterFail,
   userLogout,
 } from "../reducers/authSlice";
+import api from "./api";
 
 export const login = (loginState, role) => async (dispatch) => {
   try {
     dispatch(userLoginRequest());
 
-    const config = {
-      Headers: {
-        "Content-Type": "application/json",
-      },
-    };
-
-    const { data } = await axios.post(
-      `/api/users/login/${role}`,
-      loginState,
-      config
-    );
+    const data = await api.post(`/api/users/login/${role}`, loginState);
 
     dispatch(userLoginSuccess(data));
 
@@ -50,14 +40,7 @@ export const register = (signupState) => async (dispatch) => {
   try {
     dispatch(userRegisterRequest());
 
-    console.log(signupState);
-    const config = {
-      Headers: {
-        "Content-Type": "application/json",
-      },
-    };
-
-    await axios.post("/api/users", signupState, config);
+    await api.post("/api/users", signupState);
 
     dispatch(userRegisterSuccess());
   } catch (error) {

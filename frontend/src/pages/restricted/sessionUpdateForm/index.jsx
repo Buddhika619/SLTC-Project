@@ -11,7 +11,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useMutation } from "react-query";
 import { toast } from "react-toastify";
 
-import { createOrUpdateLocation } from "../../../api/locationEndPoints";
 import { createOrUpdateSession } from "../../../api/sessionEndPoints";
 
 const checkoutSchema = yup.object().shape({
@@ -32,8 +31,6 @@ const SessionUpdateForm = () => {
   const headerTextRef = useRef("");
   const headerSubRef = useRef("");
 
-
-
   useMemo(() => {
     if (sessionInfo) {
       headerTextRef.current = "Update Session";
@@ -45,7 +42,7 @@ const SessionUpdateForm = () => {
         originalDate.getHours() + 5,
         originalDate.getMinutes() + 30
       );
-    
+
       // Getting the ISO string with the adjusted time
       let adjustedISOString = originalDate.toISOString().slice(0, 16);
 
@@ -152,7 +149,7 @@ const SessionUpdateForm = () => {
               <TextField
                 fullWidth
                 variant="filled"
-                type="datetime-local" // Use "datetime-local" for combined date and time input
+                type="datetime-local"
                 label="Date and Time"
                 onBlur={handleBlur}
                 onChange={handleChange}

@@ -26,23 +26,22 @@ const Student = db.define("student", {
 });
 
 // Define association with User model
-Student.belongsTo(User, { foreignKey: "userID", onDelete: "CASCADE",  });
+Student.belongsTo(User, { foreignKey: "userID", onDelete: "CASCADE" });
 
 // Define association with Faculty model
-Student.belongsTo(Faculty, { foreignKey: "facultyID", onDelete: "CASCADE",  });
+Student.belongsTo(Faculty, { foreignKey: "facultyID", onDelete: "CASCADE" });
 
 export default Student;
 
 // resuable queries =============================================================
 
 export const getStudentList = async () => {
-
   const students = await Student.findAll({
     include: [
       {
         model: User,
         // attributes: [ 'firstName', 'lastName', 'email', 'role', 'isAdmin', 'isApproved'],
-        exclude: ['password'],
+        exclude: ["password"],
       },
       {
         model: Faculty,
@@ -51,9 +50,8 @@ export const getStudentList = async () => {
     ],
   });
 
-  return students
-}
-
+  return students;
+};
 
 export const getStudentCount = async () => {
   const count = await Student.count();
@@ -61,29 +59,25 @@ export const getStudentCount = async () => {
   return count;
 };
 
-
 export const getStudentByUserId = async (userID) => {
-
   const student = await Student.findOne({
     where: { userID: userID },
     include: [
       {
         model: User,
-        exclude: [ 'password'],
+        exclude: ["password"],
       },
-      
     ],
   });
 
   return student;
 };
 export const getStudentByPK = async (studentID) => {
-  
   const student = await Student.findByPk(studentID, {
     include: [
       {
         model: User,
-        attributes: { exclude: ['password'] },
+        attributes: { exclude: ["password"] },
       },
     ],
   });

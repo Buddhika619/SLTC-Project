@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import  {
+import {
   createFaculty,
   getAllFaculties,
   getFacultyById,
@@ -46,7 +46,7 @@ const getFacultyByIdHandler = async (req, res, next) => {
 
 const updateFacultyByIdHandler = async (req, res, next) => {
   const { department } = req.body;
-  console.log(req.body)
+
   try {
     const faculty = await updateFacultyById(req.params.id, { department });
 
@@ -76,9 +76,9 @@ const getAllFacultiesHandler = async (req, res, next) => {
 
 const deleteFacultyByIdHandler = async (req, res, next) => {
   try {
-  await deleteFacultyById(req.params.id);
+    await deleteFacultyById(req.params.id);
 
-    res.status(200).json({msg: "delete success"});
+    res.status(200).json({ msg: "delete success" });
   } catch (error) {
     next(error);
   }

@@ -124,7 +124,6 @@ export const updateAttendance = async (studentID, sessionID, updatedData) => {
 };
 
 export const deleteAttendance = async (studentID, sessionID) => {
-  console.log("session ids" + sessionID);
   const deletedAttendance = await Attendance.destroy({
     where: { studentID, sessionID },
   });

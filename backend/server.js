@@ -1,4 +1,3 @@
-import path from "path";
 import express from "express";
 import morgan from "morgan";
 import dotenv from "dotenv";
@@ -8,13 +7,12 @@ import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import db from "./config/db.js";
 import facultyRoutes from "./routes/facutlyRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
-import attendanceRoutes from './routes/attendanceRoutes.js'
-import courseRoutes from './routes/courseRoutes.js'
-import sessionLocationRoutes from './routes/sessionLocationRoutes.js'
-import sessionRoutes from './routes/sessionRoutes.js'
-import studentCoursesRoutes from './routes/studentCoursesRoutes.js'
-import teacherCoursesRoutes from './routes/teacherCoursesRoutes.js'
-import statsRoutes from './routes/statsRoutes.js'
+import attendanceRoutes from "./routes/attendanceRoutes.js";
+import courseRoutes from "./routes/courseRoutes.js";
+import sessionLocationRoutes from "./routes/sessionLocationRoutes.js";
+import sessionRoutes from "./routes/sessionRoutes.js";
+import studentCoursesRoutes from "./routes/studentCoursesRoutes.js";
+import statsRoutes from "./routes/statsRoutes.js";
 
 dotenv.config();
 
@@ -35,20 +33,19 @@ if (process.env.NODE_ENV === "development") {
 app.use(express.json());
 app.use(helmet());
 
+app.get("/", (req, res) => {
+  res.status(200).send("api is running!");
+});
 
-app.get('/', (req, res) => {
-  res.send('api is running!')
-})
 //routes
 app.use("/api/users", userRoutes);
 app.use("/api/faculty", facultyRoutes);
 app.use("/api/attendance", attendanceRoutes);
-app.use("/api/course", courseRoutes)
-app.use('/api/session', sessionRoutes)
-app.use('/api/session-location', sessionLocationRoutes)
-app.use('/api/students-courses', studentCoursesRoutes)
-app.use('/api/teachers-courses', teacherCoursesRoutes)
-app.use('/api/stats', statsRoutes)
+app.use("/api/course", courseRoutes);
+app.use("/api/session", sessionRoutes);
+app.use("/api/session-location", sessionLocationRoutes);
+app.use("/api/students-courses", studentCoursesRoutes);
+app.use("/api/stats", statsRoutes);
 
 //error handling
 app.use(notFound);

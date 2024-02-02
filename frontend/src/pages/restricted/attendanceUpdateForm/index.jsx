@@ -4,14 +4,13 @@ import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Switch from "@mui/material/Switch";
 import AdminHeader from "../../../components/AdminHeader";
-import { useMemo, useRef, useState } from "react";
+import { useState } from "react";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { useNavigate, useLocation } from "react-router-dom";
 
 import { useMutation } from "react-query";
 import { toast } from "react-toastify";
 
-import { createOrUpdateCourse } from "../../../api/courseEndPoints";
 import { createOrUpdateAttendance } from "../../../api/attendanceEndPoints";
 
 const checkoutSchema = yup.object().shape({
@@ -23,15 +22,14 @@ const AttendanceUpdateForm = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [isPresent, setIsPresent] = useState(false);
-  const location = useLocation()
-  console.log(location.pathname)
+  const location = useLocation();
 
   const [formic] = useState({
-    studentID: location.pathname.split('/')[4],
+    studentID: location.pathname.split("/")[4],
     sessionID: "",
   });
 
-  const change = (e) => {
+  const change = () => {
     setIsPresent((prevState) => !prevState);
   };
 

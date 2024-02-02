@@ -6,22 +6,18 @@ import User from "./userModel.js";
 
 import Faculty from "./facultyModel.js";
 
-const StudentsCourses = db.define(
-  "students_courses",
-  {
-    studentID: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      primaryKey: true
-    },
-    courseID: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      primaryKey: true
-    },
+const StudentsCourses = db.define("students_courses", {
+  studentID: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    primaryKey: true,
   },
-
-);
+  courseID: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    primaryKey: true,
+  },
+});
 
 // Define associations with Student and Course models
 StudentsCourses.belongsTo(Student, {
@@ -81,17 +77,15 @@ export const getAllStudentCourseRelationships = async () => {
   return relationships;
 };
 
-
 export const getAllStudentCourseRelationshipsByUserID = async (id) => {
   const relationships = await StudentsCourses.findAll({
     where: {
-      studentID: id
+      studentID: id,
     },
     include: [
-      
       {
         model: Course,
-    
+
         include: [
           {
             model: Faculty,
@@ -123,7 +117,7 @@ export const getStudentCourseRelationshipByIds = async (
       },
       {
         model: Course,
-       
+
         include: [
           {
             model: Faculty,

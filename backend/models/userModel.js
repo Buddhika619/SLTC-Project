@@ -64,13 +64,11 @@ export const createUser = async (
 };
 
 export const findAllUsers = async () => {
-
   const users = await User.findAll({
-    attributes: { exclude: ['password'] },
+    attributes: { exclude: ["password"] },
   });
   return users;
 };
-
 
 export const unapprovedUsers = async () => {
   const users = await User.findAll({
@@ -80,14 +78,12 @@ export const unapprovedUsers = async () => {
   return users;
 };
 
-
 export const getUnapprovedUsersCount = async () => {
   const count = await User.count({
     where: { isApproved: false },
   });
   return count;
 };
-
 
 export const getUserById = async (id) => {
   const user = await User.findByPk(id, {

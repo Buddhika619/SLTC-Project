@@ -99,7 +99,6 @@ const UserUpdateForm = () => {
         date: new Date(userInfo.enrollmentDate),
       });
     } else {
-      // Default case
       headerTextRef.current = "USER";
       headerSubRef.current = "User";
       setFormicState({

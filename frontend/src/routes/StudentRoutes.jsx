@@ -1,23 +1,20 @@
-import {  Routes, Route } from 'react-router-dom'
-import {StudentNavigation, navigationItems} from '../constants/naviagationMenuContent'
+import { Routes, Route } from "react-router-dom";
+import { StudentNavigation } from "../constants/naviagationMenuContent";
 
+import "react-toastify/dist/ReactToastify.css";
 
-import 'react-toastify/dist/ReactToastify.css'
-
-import { ColorModeContext, useMode } from '../theme'
-import { CssBaseline, ThemeProvider } from '@mui/material'
+import { ColorModeContext, useMode } from "../theme";
+import { CssBaseline, ThemeProvider } from "@mui/material";
 import Sidebar from "../layouts/SideBar";
-import TopBar from  "../layouts/TopBar";
-import Dashboard from '../pages/restricted/dashboard'
-import StudentUpcomingSessionList from '../pages/restricted/studentUpcomingSessionsList'
-import StudentCourseList from '../pages/restricted/studentCourseList'
-import StudentCourseRoleList from '../pages/restricted/StudentRoleCourseList'
-import StudentAttendnaceList from '../pages/restricted/StudentAttendanceList'
+import TopBar from "../layouts/TopBar";
+import Dashboard from "../pages/restricted/dashboard";
+import StudentUpcomingSessionList from "../pages/restricted/studentUpcomingSessionsList";
 
-
+import StudentCourseRoleList from "../pages/restricted/StudentRoleCourseList";
+import StudentAttendnaceList from "../pages/restricted/StudentAttendanceList";
 
 function StudenRoutes() {
-  const [theme, colorMode] = useMode()
+  const [theme, colorMode] = useMode();
   return (
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
@@ -27,17 +24,19 @@ function StudenRoutes() {
           <main className="content">
             <TopBar />
             <Routes>
-            <Route path = '/' element = {<Dashboard />} />
-            <Route path = '/sessions' element = {<StudentUpcomingSessionList />} />
-            <Route path = '/attendance' element = {<StudentAttendnaceList />} />
-            <Route path = '/courses' element = {<StudentCourseRoleList />} />
+              <Route path="/" element={<Dashboard />} />
+              <Route
+                path="/sessions"
+                element={<StudentUpcomingSessionList />}
+              />
+              <Route path="/attendance" element={<StudentAttendnaceList />} />
+              <Route path="/courses" element={<StudentCourseRoleList />} />
             </Routes>
           </main>
         </div>
       </ThemeProvider>
     </ColorModeContext.Provider>
-  )
+  );
 }
 
-export default StudenRoutes
-
+export default StudenRoutes;

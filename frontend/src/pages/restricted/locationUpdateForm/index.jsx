@@ -37,19 +37,16 @@ const LocationUpdateForm = () => {
       setFormicState({
         locationName: locationInfo.name,
         facultyName: locationInfo.faculty.department,
-    
       });
     } else {
       headerTextRef.current = "Create Location";
       headerSubRef.current = "Manage Location";
       setFormicState({
-       locationName: "",
-       facultyName: ""
+        locationName: "",
+        facultyName: "",
       });
     }
   }, [locationInfo]);
-
-
 
   const formMutation = useMutation(createOrUpdateLocation, {
     onMutate: () => {
@@ -143,8 +140,6 @@ const LocationUpdateForm = () => {
                 helperText={touched.facultyName && errors.facultyName}
                 sx={{ gridColumn: "span 2" }}
               />
-
-            
             </Box>
             <Box display="flex" justifyContent="end" mt="20px">
               <Button type="submit" color="secondary" variant="contained">

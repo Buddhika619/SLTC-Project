@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
-import Student, { getStudentByUserId } from "../models/studentModel.js";
-import Teacher, { getTeacherByUserId } from "../models/teacherModel.js";
+import { getStudentByUserId } from "../models/studentModel.js";
+import { getTeacherByUserId } from "../models/teacherModel.js";
 
 const basicAuth = asyncHandler(async (req, res, next) => {
   let token;
@@ -22,7 +22,6 @@ const basicAuth = asyncHandler(async (req, res, next) => {
 
       next();
     } catch (error) {
-      console.error(error);
       res.status(401);
       next(error);
     }
@@ -49,7 +48,6 @@ const studentAccess = async (req, res, next) => {
       throw new Error("Not Authorized as a student");
     }
   } catch (e) {
-    console.error(e);
     res.status(401);
     next(e);
   }
@@ -70,7 +68,6 @@ const teacherAccess = async (req, res, next) => {
       throw new Error("Not Authorized as a Teacher");
     }
   } catch (error) {
-    console.log(error);
     res.status(401);
     next(error);
   }

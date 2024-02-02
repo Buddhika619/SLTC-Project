@@ -1,42 +1,34 @@
 import React from "react";
-import { Badge, Box, IconButton, useTheme } from "@mui/material";
-import { useContext } from "react";
-import { ColorModeContext, tokens } from "../theme";
-import InputBase from "@mui/material/InputBase";
+import { Badge, Box, IconButton } from "@mui/material";
+
 import LogoutIcon from "@mui/icons-material/Logout";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import { useDispatch, useSelector } from "react-redux";
-import {useNavigate } from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
 
-import SearchIcon from "@mui/icons-material/Search";
-import { useQuery,  } from "react-query";
+import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
 import { logout } from "../api/authEndPoints";
 import { viewNotifcationCount } from "../api/statsEndPonts";
 
 const TopBar = () => {
-
-
- 
-
   const dispatch = useDispatch();
-  const navigate = useNavigate ()
+  const navigate = useNavigate();
   const auth = useSelector((state) => state.auth);
-  const {  userInfo } = auth
+  const { userInfo } = auth;
 
-  let role = ''
-  let redirecturl = ''
-  if(userInfo.userData.user.isAdmin) {
-   role = 'admin'
-   redirecturl = '/admin/pendingusers'
-  }else if(userInfo.role === "STUDENT"){
-    role = 'student'
-    redirecturl = '/student/sessions'
-  }else if (userInfo.role === "TEACHER") {
-    role = 'teacher'
-    redirecturl = '/teacher/sessions'
+  let role = "";
+  let redirecturl = "";
+  if (userInfo.userData.user.isAdmin) {
+    role = "admin";
+    redirecturl = "/admin/pendingusers";
+  } else if (userInfo.role === "STUDENT") {
+    role = "student";
+    redirecturl = "/student/sessions";
+  } else if (userInfo.role === "TEACHER") {
+    role = "teacher";
+    redirecturl = "/teacher/sessions";
   }
-
 
   const {
     isLoading,
@@ -44,32 +36,29 @@ const TopBar = () => {
     data: notification,
   } = useQuery(["notifcation", role], viewNotifcationCount);
 
-
-
   const signOutHandler = (e) => {
-    dispatch(logout())
-    navigate('/')
+    dispatch(logout());
+    navigate("/");
   };
-
-
 
   return (
     <Box display="flex" justifyContent="flex-end" pr={10} pt={2}>
-
-
       {/* ICONS */}
       <Box display="flex">
-       {!isLoading && !isError &&(
-         <Link to={redirecturl}>
-         <IconButton>
-           <Badge badgeContent={notification && notification > 0 &&  notification} color="secondary">
-             <NotificationsOutlinedIcon />
-           </Badge>
-         </IconButton>
-       </Link>
-       ) }
+        {!isLoading && !isError && (
+          <Link to={redirecturl}>
+            <IconButton>
+              <Badge
+                badgeContent={notification && notification > 0 && notification}
+                color="secondary"
+              >
+                <NotificationsOutlinedIcon />
+              </Badge>
+            </IconButton>
+          </Link>
+        )}
 
-        <IconButton  sx={{marginLeft:'10px'}} onClick={signOutHandler}>
+        <IconButton sx={{ marginLeft: "10px" }} onClick={signOutHandler}>
           <LogoutIcon />
         </IconButton>
       </Box>

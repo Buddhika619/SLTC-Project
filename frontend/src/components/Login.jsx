@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { loginFields } from "../constants/formFields";
 import FormAction from "./FormActions";
-import FormExtra from "./FormExtra";
 import Input from "./Input";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -64,10 +63,9 @@ export default function Login() {
   //Handle Login API Integration here
   const authenticateUser = (loginState) => {
     setErrorCount(0);
- 
 
     if (pathname.split("/")[2] === "admin") {
-      console.log('ddd')
+      console.log("ddd");
       dispatch(login(loginState, "NONAC"));
     } else if (pathname.split("/")[2] === "student") {
       dispatch(login(loginState, "STUDENT"));

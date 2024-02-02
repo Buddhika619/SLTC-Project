@@ -6,10 +6,7 @@ import {
   updateSessionLocationById,
   deleteSessionLocationById,
 } from "../models/sessionLocationModel.js";
-import {
-  findFacultyByDepartment,
-  getFacultyById,
-} from "../models/facultyModel.js";
+import { findFacultyByDepartment } from "../models/facultyModel.js";
 
 // @desc Create a new session location
 // @route POST /api/session-location
@@ -18,8 +15,6 @@ import {
 const createSessionLocationHandler = async (req, res, next) => {
   try {
     const { locationName, facultyName } = req.body;
-
-    console.log(req.body)
 
     if (!locationName || !facultyName) {
       res.status(400);
@@ -72,7 +67,6 @@ const getSessionLocationByIdHandler = async (req, res, next) => {
 const updateSessionLocationByIdHandler = async (req, res, next) => {
   const { locationName: name, facultyID } = req.body;
 
- console.log(req.body)
   try {
     const updates = { name, facultyID };
     const sessionLocation = await updateSessionLocationById(

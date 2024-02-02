@@ -1,5 +1,4 @@
 import { v4 as uuidv4 } from "uuid";
-import { QueryTypes } from "sequelize";
 import {
   createSession,
   getAllSessions,
@@ -15,7 +14,6 @@ import { getCourseById, getCoursesByTeacherID } from "../models/courseModel.js";
 import { getAllStudentCourseRelationshipsByUserID } from "../models/studentCourseModel.js";
 import { getTeacherByUserId } from "../models/teacherModel.js";
 
-
 // @desc create session
 // @route POST /api/session
 // @access admin/teacher
@@ -28,8 +26,8 @@ const createSessionHandler = async (req, res, next) => {
       res.status(400);
       throw new Error("Fields cannot be empty");
     }
- 
-     const course = await getCourseById(courseID)
+
+    const course = await getCourseById(courseID);
     if (req.user.userID != course.teacherID) {
       throw new Error("This subject does not belong to you!");
     }
@@ -121,8 +119,8 @@ const getSessionByIdHandler = async (req, res, next) => {
 const updateSessionByIdHandler = async (req, res, next) => {
   const { courseID, dateTime, minutes, locationID } = req.body;
 
-  const course = await getCourseById(courseID)
-  if (req.user.userID !=course.teacherID || !req.user.isAdmin) {
+  const course = await getCourseById(courseID);
+  if (req.user.userID != course.teacherID || !req.user.isAdmin) {
     throw new Error("This subject does not belong to you!");
   }
 
@@ -165,7 +163,6 @@ const getAllSessionsRelatedToStudentHandler = async (req, res, next) => {
       req.user.studentID
     );
     for (let course of studentcourses) {
-      console.log(course);
       const sessionforcourse = await getSessionByCourseID(course.courseID);
       resultarr.push(...sessionforcourse);
     }
@@ -176,18 +173,14 @@ const getAllSessionsRelatedToStudentHandler = async (req, res, next) => {
   }
 };
 
-
-
-
 // @desc delete session
 // @route DELETE /api/session/:id
 // @access admin
 
 const deleteSessionByIdHandler = async (req, res, next) => {
   try {
-     
-    const session = await getSessionById(req.params.id)
-    const course = await getCourseById(session.courseID)
+    const session = await getSessionById(req.params.id);
+    const course = await getCourseById(session.courseID);
     if (req.user.userID != course.teacherID) {
       throw new Error("This subject does not belong to you!");
     }
@@ -200,21 +193,19 @@ const deleteSessionByIdHandler = async (req, res, next) => {
   }
 };
 
-
 // @desc get upcoming sessions
 // @route DELETE /api/session/teacher
 // @access teacher
 
 const getTeacherSessionsHandler = async (req, res, next) => {
-  console.log('dddd')
   try {
-   const sessions =await getAllActiveSessions()
-   const teacher =await getTeacherByUserId(req.user.userID)
-   let sessionArr = []
+    const sessions = await getAllActiveSessions();
+    const teacher = await getTeacherByUserId(req.user.userID);
+    let sessionArr = [];
 
     for (let session of sessions) {
       if (session.course.teacher.teacherID === teacher.teacherID) {
-        sessionArr.push(session)
+        sessionArr.push(session);
       }
     }
 
@@ -224,22 +215,19 @@ const getTeacherSessionsHandler = async (req, res, next) => {
   }
 };
 
-
-
 // @desc get all teacher sessions
 // @route DELETE /api/session/teacher/all
 // @access teacher
 
 const getAllsessionsTeacherHandler = async (req, res, next) => {
-
   try {
-   const sessions =await getAllActiveSessions()
-   const teacher =await getTeacherByUserId(req.user.userID)
-   let sessionArr = []
+    const sessions = await getAllActiveSessions();
+    const teacher = await getTeacherByUserId(req.user.userID);
+    let sessionArr = [];
 
     for (let session of sessions) {
       if (session.course.teacher.teacherID === teacher.teacherID) {
-        sessionArr.push(session)
+        sessionArr.push(session);
       }
     }
 
@@ -257,5 +245,5 @@ export {
   getAllSessionsRelatedToStudentHandler,
   deleteSessionByIdHandler,
   getTeacherSessionsHandler,
-  getAllsessionsTeacherHandler
+  getAllsessionsTeacherHandler,
 };
