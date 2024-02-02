@@ -1,4 +1,12 @@
-import { Box, Button, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -8,10 +16,11 @@ import { useMemo, useRef, useState } from "react";
 
 import { useNavigate, useLocation } from "react-router-dom";
 
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { toast } from "react-toastify";
 
 import { createOrUpdateLocation } from "../../../api/locationEndPoints";
+import { viewFacultyList } from "../../../api/facultyEndPoints";
 
 const checkoutSchema = yup.object().shape({
   locationName: yup.string().required("required"),
@@ -28,6 +37,13 @@ const LocationUpdateForm = () => {
 
   const headerTextRef = useRef("");
   const headerSubRef = useRef("");
+
+  const {
+    isLoading,
+    isError,
+    error,
+    data: facultyList,
+  } = useQuery("facultyList", viewFacultyList);
 
   useMemo(() => {
     if (locationInfo) {
@@ -80,8 +96,14 @@ const LocationUpdateForm = () => {
     }
   };
 
-  if (loading) {
-    return <h1>Loading....</h1>;
+  let faculties;
+
+  if (isLoading || loading) {
+    return <p>Loading</p>;
+  } else if (isError) {
+    return <p>{error.message}</p>;
+  } else {
+    faculties = facultyList;
   }
 
   return (
@@ -127,19 +149,31 @@ const LocationUpdateForm = () => {
                 sx={{ gridColumn: "span 2" }}
               />
 
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Faculty Name"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.facultyName}
-                name="facultyName"
-                error={!!touched.facultyName && !!errors.facultyName}
-                helperText={touched.facultyName && errors.facultyName}
-                sx={{ gridColumn: "span 2" }}
-              />
+              <FormControl sx={{ gridColumn: "span 2" }} value="id">
+                <InputLabel
+                  id="faculty"
+                  sx={{ gridColumn: "span 2" }}
+                  value="id"
+                >
+                  Faculty
+                </InputLabel>
+                <Select
+                  labelId="facultyName"
+                  id="facultyName"
+                  value={values.facultyName}
+                  label="Faculty"
+                  name="facultyName"
+                  onChange={handleChange}
+                  style={{ gridColumn: "span 2", backgroundColor: "#293040" }}
+                  error={!!touched.facultyName && !!errors.facultyName}
+                >
+                  {faculties.map((item) => (
+                    <MenuItem key={item.department} value={item.department}>
+                      {item.department}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Box>
             <Box display="flex" justifyContent="end" mt="20px">
               <Button type="submit" color="secondary" variant="contained">

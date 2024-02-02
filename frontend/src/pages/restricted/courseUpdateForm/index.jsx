@@ -1,4 +1,12 @@
-import { Box, Button, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -8,10 +16,12 @@ import { useMemo, useRef, useState } from "react";
 
 import { useNavigate, useLocation } from "react-router-dom";
 
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { toast } from "react-toastify";
 
 import { createOrUpdateCourse } from "../../../api/courseEndPoints";
+import { viewFacultyList } from "../../../api/facultyEndPoints";
+import { viewTeacherList } from "../../../api/userEndPoints";
 
 const checkoutSchema = yup.object().shape({
   courseName: yup.string().required("required"),
@@ -30,6 +40,20 @@ const CourseUpdateForm = () => {
 
   const headerTextRef = useRef("");
   const headerSubRef = useRef("");
+
+  const {
+    isLoading: teachersIsLoading,
+    isError: teacherIsError,
+  
+    data: teacherlist,
+  } = useQuery("teacherList", viewTeacherList);
+
+  const {
+    isLoading,
+    isError,
+    error,
+    data: facultyList,
+  } = useQuery("facultyList", viewFacultyList);
 
   useMemo(() => {
     if (courseInfo) {
@@ -86,8 +110,15 @@ const CourseUpdateForm = () => {
     }
   };
 
-  if (loading) {
-    return <h1>Loading....</h1>;
+  let faculties;
+  let teachers;
+  if (isLoading || loading || teachersIsLoading) {
+    return <p>Loading</p>;
+  } else if (isError || teacherIsError) {
+    return <p>{error.message}</p>;
+  } else {
+    faculties = facultyList;
+    teachers = teacherlist;
   }
 
   return (
@@ -133,46 +164,83 @@ const CourseUpdateForm = () => {
                 sx={{ gridColumn: "span 2" }}
               />
 
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Acedemic Year"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.year}
-                name="year"
-                error={!!touched.year && !!errors.year}
-                helperText={touched.year && errors.year}
-                sx={{ gridColumn: "span 2" }}
-              />
+              <FormControl sx={{ gridColumn: "span 2" }} value="id">
+                <InputLabel
+                  id="year"
+                  sx={{ gridColumn: "span 2" }}
+                  value="year"
+                >
+                  Year
+                </InputLabel>
+                <Select
+                  labelId="Acedemic year"
+                  id="year"
+                  value={values.year}
+                  label="Year"
+                  name="year"
+                  onChange={handleChange}
+                  style={{ gridColumn: "span 2", backgroundColor: "#293040" }}
+                  error={!!touched.year && !!errors.year}
+                >
+                  <MenuItem value="1">First Year</MenuItem>
+                  <MenuItem value="2">Second Year</MenuItem>
+                  <MenuItem value="3">Third Year</MenuItem>
 
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Teacher ID"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.teacherID}
-                name="teacherID"
-                error={!!touched.teacherID && !!errors.teacherID}
-                helperText={touched.teacherID && errors.teacherID}
-                sx={{ gridColumn: "span 2" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Faculty Name"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.facultyName}
-                name="facultyName"
-                error={!!touched.facultyName && !!errors.facultyName}
-                helperText={touched.facultyName && errors.facultyName}
-                sx={{ gridColumn: "span 2" }}
-              />
+                  <MenuItem value="4">Fourth Year</MenuItem>
+                </Select>
+              </FormControl>
+
+              <FormControl sx={{ gridColumn: "span 2" }} value="id">
+                <InputLabel
+                  id="teacherID"
+                  sx={{ gridColumn: "span 2" }}
+                  value="id"
+                >
+                  Teacher Name
+                </InputLabel>
+                <Select
+                  labelId="teacherID"
+                  id="teacherID"
+                  value={values.teacherID}
+                  label="Teacher Name"
+                  name="teacherID"
+                  onChange={handleChange}
+                  style={{ gridColumn: "span 2", backgroundColor: "#293040" }}
+                  error={!!touched.teacherID && !!errors.teacherID}
+                >
+                  {teachers.map((item) => (
+                    <MenuItem key={item.teacherID} value={item.teacherID}>
+                      {`${item.user.firstName} ${item.user.lastName}`}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <FormControl sx={{ gridColumn: "span 2" }} value="id">
+                <InputLabel
+                  id="faculty"
+                  sx={{ gridColumn: "span 2" }}
+                  value="id"
+                >
+                  Faculty
+                </InputLabel>
+                <Select
+                  labelId="facultyName"
+                  id="facultyName"
+                  value={values.facultyName}
+                  label="Faculty"
+                  name="facultyName"
+                  onChange={handleChange}
+                  style={{ gridColumn: "span 2", backgroundColor: "#293040" }}
+                  error={!!touched.facultyName && !!errors.facultyName}
+                >
+                  {faculties.map((item) => (
+                    <MenuItem key={item.department} value={item.department}>
+                      {item.department}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Box>
             <Box display="flex" justifyContent="end" mt="20px">
               <Button type="submit" color="secondary" variant="contained">

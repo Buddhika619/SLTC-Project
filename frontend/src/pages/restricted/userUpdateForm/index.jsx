@@ -19,8 +19,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import { updateUserById } from "../../../api/userEndPoints";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { toast } from "react-toastify";
+import { viewFacultyList } from "../../../api/facultyEndPoints";
 
 const checkoutSchema = yup.object().shape({
   firstName: yup.string().required("required"),
@@ -48,7 +49,13 @@ const UserUpdateForm = () => {
   const headerTextRef = useRef("");
   const headerSubRef = useRef("");
 
-  console.log(userInfo);
+  const {
+    isLoading,
+    isError,
+    error,
+    data: facultyList,
+  } = useQuery("facultyList", viewFacultyList);
+
   useMemo(() => {
     if (userInfo.teacherID) {
       headerTextRef.current = "TEACHER";
@@ -106,10 +113,10 @@ const UserUpdateForm = () => {
         lastName: userInfo.lastName,
         email: userInfo.email,
         password: "",
-        role: userInfo?.role ?? "",
-        year: userInfo?.role ?? "",
-        faculty: userInfo?.role ?? "",
-        date: userInfo?.role ?? "",
+        role:  "",
+        year:  "",
+        faculty:  "",
+        date: "",
       });
     }
   }, [userInfo]);
@@ -155,9 +162,13 @@ const UserUpdateForm = () => {
       [e.target.id ?? e.target.name]: boolean ?? e.target.value,
     }));
   };
-
-  if (loading) {
-    return <h1>Loading....</h1>;
+  let faculties;
+  if (isLoading || loading) {
+    return <p>Loading</p>;
+  } else if (isError) {
+    return <p>{error.message}</p>;
+  } else {
+    faculties = facultyList;
   }
 
   return (
@@ -242,18 +253,27 @@ const UserUpdateForm = () => {
                 helperText={touched.password && errors.password}
               />
 
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Faculty"
-                onChange={handleChange}
-                value={values.faculty}
-                id="faculty"
-                sx={{ gridColumn: "span 2" }}
-                error={!!touched.faculty && !!errors.faculty}
-                helperText={touched.faculty && errors.faculty}
-              />
+  
+
+              <FormControl sx={{ gridColumn: "span 2" }} value="id">
+                <InputLabel id="faculty" sx={{ gridColumn: "span 2" }} value="id">
+                  Faculty
+                </InputLabel>
+                <Select
+                  labelId="faculty"
+                  id="faculty"
+                  value={values.faculty}
+                  label="Faculty"
+                  name="faculty"
+                  onChange={handleChange}
+                  style={{ gridColumn: "span 2", backgroundColor: "#293040" }}
+                  error={!!touched.faculty && !!errors.faculty}
+                >
+                  {faculties.map((item) => (
+                    <MenuItem  key={item.department}  value={item.department}>{item.department}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
 
               <TextField
                 fullWidth

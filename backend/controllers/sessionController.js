@@ -28,7 +28,7 @@ const createSessionHandler = async (req, res, next) => {
     }
 
     const course = await getCourseById(courseID);
-    if (req.user.userID != course.teacherID) {
+    if (req.user.userID != course.teacherID && !req.user.isAdmin) {
       throw new Error("This subject does not belong to you!");
     }
     const checkDateTime = new Date(dateTime);
