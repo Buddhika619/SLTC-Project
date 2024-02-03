@@ -100,7 +100,6 @@ const PendingUserList = () => {
     },
   ];
 
-  console.log(content[0].userID);
 
   let rows = content?.map((content, key) => ({
     id: content.userID,
