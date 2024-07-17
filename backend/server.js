@@ -18,12 +18,13 @@ dotenv.config();
 
 const app = express();
 
-try {
-  await db.authenticate();
-  console.log("Connection has been established successfully.".cyan.underline);
-} catch (error) {
-  console.error("Unable to connect to the database:", error);
-}
+db.authenticate()
+  .then(() => {
+    console.log("Connection has been established successfully.".cyan.underline);
+  })
+  .catch((error) => {
+    console.error("Unable to connect to the database:", error);
+  });
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
